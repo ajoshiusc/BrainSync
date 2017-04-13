@@ -29,19 +29,19 @@ nClusters = 3
 ref = '100307'
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
-dfs_left = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.left.dfs'))
-dfs_left_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.very_smooth.left.dfs'))
+dfs_right = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+.a2009s.32k_fs.reduce3.right.dfs'))
+dfs_right_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+.a2009s.32k_fs.reduce3.very_smooth.right.dfs'))
 
-ind_subsample = sp.arange(start=0, stop=dfs_left.labels.shape[0], step=1)
-ind_rois_orig = sp.in1d(dfs_left.labels,[46,3,4,28,29,68,69,70])
+ind_subsample = sp.arange(start=0, stop=dfs_right.labels.shape[0], step=1)
+ind_rois_orig = sp.in1d(dfs_right.labels,[46,3,4,28,29,68,69,70])
 ind_rois = sp.full(ind_rois_orig.shape[0], False ,dtype=bool)
 ind_rois = ind_rois_orig.copy()
 ind_rois[ind_subsample] = True
 
 
-surf1 = dfs_left_sm
+surf1 = dfs_right_sm
 X = surf1.vertices[:, 0]
 Y = surf1.vertices[:, 1]
 Z = surf1.vertices[:, 2]
@@ -72,7 +72,7 @@ Wt = (1.0/3.0)*(TC)
 surf_weight = Wt*Ar
 surf1.attributes = surf_weight
 surf_weight = surf_weight[:, None]
-# smooth_surf_function(dfs_left_sm, Wt*Ar*0.1, a1=0, a2=1)
+# smooth_surf_function(dfs_right_sm, Wt*Ar*0.1, a1=0, a2=1)
 
 surf1.attributes = ind_rois
 surf1 = patch_color_attrib(surf1)
@@ -88,9 +88,9 @@ diffafter = 0
 
 sub = lst[0]
 
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/epilepsy/\
-NorthShoreLIJ/0019004/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
-data = vrest1['func_left']
+vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/\
+NorthShoreLIJ/0019001/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+data = vrest1['func_right']
 indx = sp.isnan(data)
 data[indx] = 0
 
@@ -110,12 +110,27 @@ diffbefore = 0
 
 lst = glob.glob('/big_disk/ajoshi/fcon_1000/Beijing/sub*')
 nsub = 0
+
+#
+## rand sub
+#sub=lst[1]
+#vrest1 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+#data = vrest1['func_right']
+#indx = sp.isnan(data)
+#data[indx] = 0
+#vrest = data
+##vrest = vrest[ind_rois, :vrest1.shape[1]]
+#m = np.mean(vrest, 1)
+#vrest = vrest - m[:, None]
+#s = np.std(vrest, 1)+1e-116
+#vrest1 = vrest/s[:, None]
+
 for sub in lst:
-    if not os.path.exists(sub + '/fmri_tnlm_5_reduce3.mat'):
+    if not os.path.exists(sub + '/fmri_tnlm_5_reduce3_v2.mat'):
         continue
         
-    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3.mat')  # h5py.File(fname1);
-    data = vrest2['func_left']
+    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+    data = vrest2['func_right']
     indx = sp.isnan(data)
     data[indx] = 0
     vrest = data
@@ -131,8 +146,6 @@ for sub in lst:
     vrest2, Rot = rot_sub_data(ref=vrest1, sub=vrest2,
                                area_weight=sp.sqrt(surf_weight[ind_rois]))
     
-#    if nsub == 1:
-#        vrest1 = vrest2
 
     rho1rot += sp.sum(vrest1*vrest2,
                      axis=1)/vrest1.shape[1]
@@ -149,42 +162,42 @@ diffbefore /= nsub
 
 plt.imshow(sp.absolute(diffbefore), aspect='auto', clim=(0, 2.0))
 plt.colorbar()
-plt.savefig('dist_epi_before_fcon1000_0019004_left.pdf', dpi=300)
+plt.savefig('dist_epi_before_fcon1000_0019001_right.pdf', dpi=300)
 plt.show()
 
 #diffafter = gaussian_filter(diffafter, [0, 50])
 
 plt.imshow(sp.absolute(diffafter), aspect='auto', clim=(0, 2.0))
 plt.colorbar()
-plt.savefig('dist_epi_after_fcon1000_0019004_left.pdf', dpi=300)
+plt.savefig('dist_epi_after_fcon1000_0019001_right.pdf', dpi=300)
 plt.show()
 
 
 rho_full = sp.zeros((surf1.attributes.shape[0]))
 rho_full[ind_rois] = rho1
-dfs_left_sm.attributes = rho_full
-dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
-view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_before_rot_fcon1000_0019004_left.png', show=1)
+dfs_right_sm.attributes = rho_full
+dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
+view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
+               outfile='rest_before_rot_fcon1000_0019001_right.png', show=1)
 
-   #dfs_left_sm.attributes = sp.absolute(diffafter[:,t])
-#    dfs_left_sm=patch_color_attrib(dfs_left_sm,clim=[0,1])
-#    view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90, outfile='rest1motrho_full=sp.zeros((surf1.attributes.shape[0]))
+   #dfs_right_sm.attributes = sp.absolute(diffafter[:,t])
+#    dfs_right_sm=patch_color_attrib(dfs_right_sm,clim=[0,1])
+#    view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90, outfile='rest1motrho_full=sp.zeros((surf1.attributes.shape[0]))
 rho_full[ind_rois] = rho1rot
-dfs_left_sm.attributes = rho_full
-dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
-view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_after_rot1_fcon1000_0019004_left.png', show=1)
-view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_after_rot2_fcon1000_0019004_left.png', show=1)
+dfs_right_sm.attributes = rho_full
+dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
+view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
+               outfile='rest_after_rot1_fcon1000_0019001_right.png', show=1)
+view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
+               outfile='rest_after_rot2_fcon1000_0019001_right.png', show=1)
 
 
 #plt.plot(rho1)
 #
 #for t in sp.arange(15,32):
-#    dfs_left_sm.attributes = sp.absolute(diffafter[:,t])
-#    dfs_left_sm = patch_color_attrib(dfs_left_sm,clim=[0,.6])
-#    view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90, show=1)
+#    dfs_right_sm.attributes = sp.absolute(diffafter[:,t])
+#    dfs_right_sm = patch_color_attrib(dfs_right_sm,clim=[0,.6])
+#    view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90, show=1)
 #    
 #    
 diff = sp.absolute(vrest1 - vrest2)
@@ -192,13 +205,13 @@ diff_s = gaussian_filter(diff,[0,10])
 #
 #
 #for ind in sp.arange(vrest1.shape[1]):
-#    dfs_left_sm.attributes = diff_s[:,ind]
+#    dfs_right_sm.attributes = diff_s[:,ind]
 #    fname1 = 'rest_vs_motor_after_rot_%d_d.png' % ind
 #    fname2 = 'rest_vs_motor_after_rot_%d_m.png' % ind
-#    dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
-#    view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
+#    dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
+#    view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
 #                   outfile=fname1, show=0)
-#    view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
+#    view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
 #                   outfile=fname2, show=0)
 #    print ind, 
 
