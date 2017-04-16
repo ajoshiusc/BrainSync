@@ -89,7 +89,7 @@ diffafter = 0
 sub = lst[0]
 
 vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/\
-NorthShoreLIJ/0019001/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+NorthShoreLIJ/0019002/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
 data = vrest1['func_right']
 indx = sp.isnan(data)
 data[indx] = 0
@@ -162,14 +162,14 @@ diffbefore /= nsub
 
 plt.imshow(sp.absolute(diffbefore), aspect='auto', clim=(0, 2.0))
 plt.colorbar()
-plt.savefig('dist_epi_before_fcon1000_0019001_right.pdf', dpi=300)
+plt.savefig('dist_epi_before_fcon1000_0019002_right.pdf', dpi=300)
 plt.show()
 
 #diffafter = gaussian_filter(diffafter, [0, 50])
 
 plt.imshow(sp.absolute(diffafter), aspect='auto', clim=(0, 2.0))
 plt.colorbar()
-plt.savefig('dist_epi_after_fcon1000_0019001_right.pdf', dpi=300)
+plt.savefig('dist_epi_after_fcon1000_0019002_right.pdf', dpi=300)
 plt.show()
 
 
@@ -178,7 +178,7 @@ rho_full[ind_rois] = rho1
 dfs_right_sm.attributes = rho_full
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_before_rot_fcon1000_0019001_right.png', show=1)
+               outfile='rest_before_rot_fcon1000_0019002_right.png', show=1)
 
    #dfs_right_sm.attributes = sp.absolute(diffafter[:,t])
 #    dfs_right_sm=patch_color_attrib(dfs_right_sm,clim=[0,1])
@@ -187,9 +187,9 @@ rho_full[ind_rois] = rho1rot
 dfs_right_sm.attributes = rho_full
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_after_rot1_fcon1000_0019001_right.png', show=1)
+               outfile='rest_after_rot1_fcon1000_0019002_right.png', show=1)
 view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_after_rot2_fcon1000_0019001_right.png', show=1)
+               outfile='rest_after_rot2_fcon1000_0019002_right.png', show=1)
 
 
 #plt.plot(rho1)

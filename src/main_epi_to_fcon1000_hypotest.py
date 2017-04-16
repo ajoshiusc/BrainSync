@@ -88,8 +88,10 @@ diffafter = 0
 
 sub = lst[0]
 
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/epilepsy/\
+vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/\
 NorthShoreLIJ/0019002/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+
+                          
 data = vrest1['func_right']
 indx = sp.isnan(data)
 data[indx] = 0
@@ -107,17 +109,30 @@ rho1rot = 0
 diffafter = 0
 diffbefore = 0
 
-dataf = sp.load('old/fcon1000_ave_var_all_sub_right.npz')
+a = sp.load('fcon1000_null_right.npz')
+rho_null=a['rho_null']
 
 lst = glob.glob('/big_disk/ajoshi/fcon_1000/Beijing/sub*')
 nsub = 0
 rho_all = sp.zeros((vrest1.shape[0],0))
 
+#sub = lst[10]
+#vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+#data = vrest2['func_right']
+#indx = sp.isnan(data)
+#data[indx] = 0
+#vrest = data
+#vrest = vrest[ind_rois, :vrest1.shape[1]]
+#m = np.mean(vrest, 1)
+#vrest = vrest - m[:, None]
+#s = np.std(vrest, 1)+1e-116
+#vrest1 = vrest/s[:, None]
+
 for sub in lst:
-    if not os.path.exists(sub + '/fmri_tnlm_5_reduce3.mat'):
+    if not os.path.exists(sub + '/fmri_tnlm_5_reduce3_v2.mat'):
         continue
     
-    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3.mat')  # h5py.File(fname1);
+    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
     data = vrest2['func_right']
     indx = sp.isnan(data)
     data[indx] = 0
@@ -142,63 +157,42 @@ for sub in lst:
     nsub += 1
     print sub
 
-
-pval=sp.zeros((rho_all.shape[0],1))
-for jj in range(rho_all.shape[0]):
-    _, pval[jj] = sp.stats.mannwhitneyu(rho_all[jj,:], dataf['rho_all'][jj,:],
-           alternative='less')
-    print jj
-
-dfs_right_sm.attributes = sp.squeeze(pval)
-dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 0.01])
-view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_pval1_fcon1000_0019002_right.png', show=1)
-view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_pval2_fcon1000_0019002_right.png', show=1)
-
 rho1rot /= nsub
-   
-rho_full = sp.zeros((surf1.attributes.shape[0]))
-rho_full[ind_rois] = rho1rot
-dfs_right_sm.attributes = rho_full
+
+
+
+import seaborn as sns
+
+sns.distplot(rho_all[120,:])
+sns.distplot(rho_null[120,:])
+
+
+#
+#pval=sp.zeros((rho_all.shape[0],1))
+#
+#for jj in range(rho_all.shape[0]):
+#    _, pval[jj] = sp.stats.mannwhitneyu(rho_null[jj,:], rho_all[jj,:]) #,
+#                                        # alternative='greater')
+#    print jj
+#sns.distplot(pval)
+#
+dfs_right_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
+view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
+               outfile='rest_fcon1000_0019002_right.png', show=1)
+view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
+               outfile='rest_fcon1000_0019002_right.png', show=1)
+
+
+pval = 0*rho_all;
+for jj in range(rho_all.shape[1]):
+    pval[:,jj] = sp.sum(rho_null > rho_all[:, jj][:,None], axis=1) #,
+
+pval1 = 1-pval.mean(axis=1)/rho_null.shape[1]
+dfs_right_sm.attributes = pval1
+dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, .05])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                outfile='rest_after_rot1_fcon1000_0019002_right.png', show=1)
 view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
                outfile='rest_after_rot2_fcon1000_0019002_right.png', show=1)
-
-
-#plt.plot(rho1)
-#
-#for t in sp.arange(15,32):
-#    dfs_right_sm.attributes = sp.absolute(diffafter[:,t])
-#    dfs_right_sm = patch_color_attrib(dfs_right_sm,clim=[0,.6])
-#    view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90, show=1)
-#    
-#    
-stat = (rho1rot - dataf['rho_all'].mean(1))/dataf['rho_all'].var(1)
-rho_full = sp.zeros((surf1.attributes.shape[0]))
-rho_full[ind_rois] = stat
-dfs_right_sm.attributes = rho_full
-dfs_right_sm = patch_color_attrib(dfs_right_sm)#, clim=[-10, 10])
-view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_stat_rot1_fcon1000_0019002_right.png', show=1)
-view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_stat_rot2_fcon1000_0019002_right.png', show=1)
-
-sp.savez('rest_stat_fcon1000_0019002_right.npz',pval=pval)
-
-#diff_s = gaussian_filter(diff,[0,10])
-#
-#
-#for ind in sp.arange(vrest1.shape[1]):
-#    dfs_right_sm.attributes = diff_s[:,ind]
-#    fname1 = 'rest_vs_motor_after_rot_%d_d.png' % ind
-#    fname2 = 'rest_vs_motor_after_rot_%d_m.png' % ind
-#    dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
-#    view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
-#                   outfile=fname1, show=0)
-#    view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
-#                   outfile=fname2, show=0)
-#    print ind, 
 
