@@ -166,7 +166,6 @@ import seaborn as sns
 sns.distplot(rho_all[120,:])
 sns.distplot(rho_null[120,:])
 
-
 #
 #pval=sp.zeros((rho_all.shape[0],1))
 #
@@ -184,12 +183,26 @@ view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
                outfile='rest_fcon1000_0019002_right.png', show=1)
 
 
-pval = 0*rho_all;
-for jj in range(rho_all.shape[1]):
-    pval[:,jj] = sp.sum(rho_null > rho_all[:, jj][:,None], axis=1) #,
+rho_all1 = sp.mean(rho_all,axis=1)[:,None]
+pval = 0*rho_all1;
+
+for jj in range(rho_all1.shape[1]):
+    pval[:,jj] = sp.sum(rho_null > rho_all1[:, jj][:,None], axis=1) #,
 
 pval1 = 1-pval.mean(axis=1)/rho_null.shape[1]
+from statsmodels.stats.multitest import multipletests
+a=multipletests(pvals=pval1, alpha=0.05, method='fdr_bh')
 dfs_right_sm.attributes = pval1
+sns.distplot(pval1)
+
+#from rpy2.robjects.packages import importr
+#from rpy2.robjects.vectors import FloatVector
+#
+#stats = importr('stats')
+#
+#p_adjust = stats.p_adjust(FloatVector(pval1), method = 'BH')
+#dfs_right_sm.attributes= sp.array(p_adjust)
+
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, .05])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                outfile='rest_after_rot1_fcon1000_0019002_right.png', show=1)
