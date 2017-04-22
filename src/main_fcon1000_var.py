@@ -103,99 +103,17 @@ diffbefore = 0
 a = sp.load('fcon1000_null_all_left.npz')
 rho_null = sp.mean(a['rho_null'], axis=0)
 
-lst = glob.glob('/big_disk/ajoshi/fcon_1000/Beijing/sub*')
-nsub = 0
-rho_all = sp.zeros((vrest1.shape[0], 0))
-
-#sub = lst[4]
-#vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
-#data = vrest2['func_left']
-#indx = sp.isnan(data)
-#data[indx] = 0
-#vrest = data
-#vrest = vrest[:, :vrest1.shape[1]]
-#m = np.mean(vrest, 1)
-#vrest = vrest - m[:, None]
-#s = np.std(vrest, 1)+1e-116
-#vrest1 = vrest/s[:, None]
-
-for sub in lst:
-    if not os.path.exists(sub + '/fmri_tnlm_5_reduce3_v2.mat'):
-        continue
-
-    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')
-    data = vrest2['func_left']
-    indx = sp.isnan(data)
-    data[indx] = 0
-    vrest = data
-    vrest = vrest[:, :vrest1.shape[1]]
-    m = np.mean(vrest, 1)
-    vrest = vrest - m[:, None]
-    s = np.std(vrest, 1)+1e-116
-    vrest2 = vrest/s[:, None]
-
-    rho1 += sp.sum(vrest1*vrest2, axis=1)/vrest1.shape[1]
-    diffbefore += vrest1 - vrest2
-
-    vrest2, Rot = rot_sub_data(ref=vrest1, sub=vrest2,
-                               area_weight=sp.sqrt(surf_weight))
-    t = sp.sum(vrest1*vrest2, axis=1)/vrest1.shape[1]
-
-    rho_all = sp.append(rho_all, t[:, None], axis=1)
-    rho1rot += t
-
-    diffafter += vrest1 - vrest2
-    nsub += 1
-    print sub
-
-rho1rot /= nsub
-
-
-#
-# import seaborn as sns
-#
-# sns.distplot(rho_all[120,:])
-# sns.distplot(rho_null[120,:])
-
-#
-# pval=sp.zeros((rho_all.shape[0],1))
-#
-# for jj in range(rho_all.shape[0]):
-#     _, pval[jj] = sp.stats.mannwhitneyu(rho_null[jj,:], rho_all[jj,:]) #,
-#                                         # alternative='greater')
-#     print jj
-# sns.distplot(pval)
-#
-dfs_left_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
+dfs_left_sm.attributes = sp.mean(rho_null, axis = 0)
 dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
 view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_rot1_fcon1000_0019006_left.png', show=1)
+               outfile='rest_mean1_left.png', show=1)
 view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_rot2_fcon1000_0019006_left.png', show=1)
+               outfile='rest_mean2_left.png', show=1)
 
-rho_null = rho_null.T
-rho_all1 = sp.mean(rho_all, axis=1)[:, None]
-pval = 0*rho_all1
-
-for jj in range(rho_all1.shape[1]):
-    pval[:, jj] = sp.sum(rho_null > rho_all1[:, jj][:, None], axis=1)
-
-pval1 = 1-pval.mean(axis=1)/rho_null.shape[1]
-a = multipletests(pvals=pval1, alpha=0.05, method='fdr_bh')
-dfs_left_sm.attributes = a[1] # sp.amax((pval1, a[1]),axis=0)
-# sns.distplot(pval1)
-
-# from rpy2.robjects.packages import importr
-# from rpy2.robjects.vectors import FloatVector
-#
-# stats = importr('stats')
-#
-# p_adjust = stats.p_adjust(FloatVector(pval1), method = 'BH')
-# dfs_left_sm.attributes= sp.array(p_adjust)
-
-dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 0.05])
+dfs_left_sm.attributes = sp.std(rho_null, axis = 0)
+dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, .1])
 view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_after_rot1_fcon1000_0019006_left_fdr.png', show=1)
+               outfile='rest_var1_left.png', show=1)
 view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_after_rot2_fcon1000_0019006_left_fdr.png', show=1)
+               outfile='rest_var2_left.png', show=1)
 
