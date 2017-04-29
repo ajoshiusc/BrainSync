@@ -8,7 +8,7 @@ import sys
 #sys.path.append('/big_disk/ajoshi/coding_ground/cortical_parcellation/src/')
 
 import nibabel.freesurfer.io as fsio
-#from surfproc import view_patch
+from surfproc import view_patch_vtk, patch_color_attrib
 from dfsio import writedfs, readdfs
 from nibabel.gifti.giftiio import read as gread
 import os
@@ -46,7 +46,7 @@ for sub in lst:
 #        continue
     if not os.path.exists(sub + '/anat/BrainSuite/fmri_surf_dat_v2.mat'):
         continue
-    
+
     ''' Right Hemisphere '''
     ''' BCI to FS processed BCI '''
     bci_BrainSuite = readdfs('/big_disk/ajoshi/coding_ground/svreg-matlab/BCI-DNI\
@@ -64,7 +64,9 @@ DNI_Atlas/surf/rh.white')
     ''' FS_BCI to FS BCI Sphere'''
     bci.vertices, bci.faces = fsio.read_geometry('/big_disk/ajoshi/data/BCI_\
 DNI_Atlas/surf/rh.sphere.reg')
-
+#    bci.attributes = bci.vertices[:,0]
+#    bci = patch_color_attrib(bci)
+#    view_patch_vtk(bci)
     ''' FS BCI Sphere to ref FS Sphere'''
     g_surf = nib.load('/big_disk/ajoshi/HCP_data/reference/100307/MNINon\
 Linear/Native/100307.R.sphere.reg.native.surf.gii')
@@ -85,7 +87,7 @@ Linear/Native/100307.R.very_inflated.native.surf.gii')
     fmri = dfs.fmri
     a = {}
     a['fmri_right'] = fmri
-    
+
 
     ''' Left Hemisphere '''
     ''' BCI to FS processed BCI '''
@@ -124,7 +126,6 @@ Linear/Native/100307.L.very_inflated.native.surf.gii')
     dfs = interpolate_fmri(bci, dfs)
     fmri = dfs.fmri
 #    a = {}
-    a['fmri_left'] = fmri    
+    a['fmri_left'] = fmri
     scipy.io.savemat(sub + '/fmrit_reduce3_v2.mat', a)
     print(sub)
-    

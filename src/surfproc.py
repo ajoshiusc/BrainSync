@@ -7,7 +7,7 @@ from vtk import (vtkSphereSource, vtkPolyData, vtkDecimatePro, vtkPoints, vtkCle
 from dfsio import readdfs, writedfs
 from vtk.util.numpy_support import numpy_to_vtk, numpy_to_vtkIdTypeArray, vtk_to_numpy
 import scipy as sp
-from mayavi import mlab
+#from mayavi import mlab
 #import trimesh as tm
 
 __author__ = "Anand A. Joshi"
@@ -321,7 +321,7 @@ vtkInteractorStyleTrackballActor, VTK_MAJOR_VERSION,
 vtkRenderWindowInteractor, vtkActor, vtkPolyDataNormals,
 vtkWindowToImageFilter, vtkPNGWriter)
 
-from PIL import Image
+#from PIL import Image
 
 def view_patch_vtk(r, azimuth=90, elevation=0, roll=-90, outfile=0, show=1):
 
@@ -403,14 +403,14 @@ def view_patch_vtk(r, azimuth=90, elevation=0, roll=-90, outfile=0, show=1):
         iren.Render()
         writer.Write()
 
-        image = Image.open(outfile)
-        image.load()
-#        imageSize = image.size
-        imageBox = image.getbbox()
-        print(image.getbbox())
-        cropped = image.crop(imageBox)
-        print(cropped.getbbox())
-        cropped.save(outfile)
+#        image = Image.open(outfile)
+#        image.load()
+##        imageSize = image.size
+#        imageBox = image.getbbox()
+#        print(image.getbbox())
+#        cropped = image.crop(imageBox)
+#        print(cropped.getbbox())
+#        cropped.save(outfile)
 
     if show != 0:
         iren.Start()
