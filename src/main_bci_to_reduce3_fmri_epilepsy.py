@@ -5,10 +5,10 @@ Created on Tue Aug 16 15:51:16 2016
 @author: ajoshi
 """
 import sys
-sys.path.append('/big_disk/ajoshi/coding_ground/cortical_parcellation/src/')
+#sys.path.append('/big_disk/ajoshi/coding_ground/cortical_parcellation/src/')
 
 import nibabel.freesurfer.io as fsio
-from surfproc import view_patch
+#from surfproc import view_patch
 from dfsio import writedfs, readdfs
 from nibabel.gifti.giftiio import read as gread
 import os
@@ -39,7 +39,7 @@ class bci:
 
 
 
-lst = glob.glob('/big_disk/ajoshi/epilepsy/NorthShoreLIJ/0*')
+lst = glob.glob('/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/s*')
 
 for sub in lst:
 #    if os.path.exists(sub + '/fmrit_reduce3.mat'):
@@ -126,5 +126,5 @@ Linear/Native/100307.L.very_inflated.native.surf.gii')
 #    a = {}
     a['fmri_left'] = fmri    
     scipy.io.savemat(sub + '/fmrit_reduce3_v2.mat', a)
-    print sub
+    print(sub)
     
