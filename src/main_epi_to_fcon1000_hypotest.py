@@ -81,7 +81,7 @@ diffafter = 0
 sub = lst[0]
 
 vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/\
-NorthShoreLIJ/0019004/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+Cleveland/subject1/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
 
 
 data = vrest1['func_left']
@@ -169,9 +169,9 @@ rho1rot /= nsub
 dfs_left_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
 dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
 view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_rot1_fcon1000_0019004_left.png', show=1)
+               outfile='rest_rot1_fcon1000_subject1_left.png', show=1)
 view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_rot2_fcon1000_0019004_left.png', show=1)
+               outfile='rest_rot2_fcon1000_subject1_left.png', show=1)
 
 rho_null = rho_null.T
 rho_all1 = sp.mean(rho_all, axis=1)[:, None]
@@ -195,7 +195,7 @@ dfs_left_sm.attributes = a[1] # sp.amax((pval1, a[1]),axis=0)
 
 dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 0.05])
 view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_after_rot1_fcon1000_0019004_left_fdr.png', show=1)
+               outfile='rest_after_rot1_fcon1000_subject1_left_fdr.png', show=1)
 view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_after_rot2_fcon1000_0019004_left_fdr.png', show=1)
+               outfile='rest_after_rot2_fcon1000_subject1_left_fdr.png', show=1)
 
