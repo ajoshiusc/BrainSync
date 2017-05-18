@@ -39,7 +39,7 @@ class bci:
 
 
 
-lst = glob.glob('/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/s*')
+lst = glob.glob('/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/s*2')
 
 for sub in lst:
 #    if os.path.exists(sub + '/fmrit_reduce3.mat'):

@@ -1,25 +1,25 @@
 clc;clear cll;close all;
-addpath(genpath('/big_disk/ajoshi/coding_ground/svreg-matlab/src'))
-addpath(genpath('/big_disk/ajoshi/coding_ground/svreg-matlab/3rdParty'))
+addpath(genpath('/home/ajoshi/coding_ground/svreg/src'))
+addpath(genpath('/home/ajoshi/coding_ground/svreg/3rdParty'))
 
 
-l=dir('/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/s*');
+l=dir('/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/*2');
 
 for subno = 1:length(l)
     fname = l(subno).name;
-    if 0% exist(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'file')
+    if 0% exist(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'file')
         subno
         continue;
     end
-    if ~exist(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/func/rest_res2standard.nii.gz'],'file')
+    if ~exist(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/func/rest_res2standard.nii.gz'],'file')
         continue;
     end
     
-    v=load_nii_BIG_Lab(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/func/rest_res2standard.nii.gz']);
-    sl=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/mprage2mni.left.mid.cortex.svreg.dfs']);
-    sr=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/mprage2mni.right.mid.cortex.svreg.dfs']);
-    al=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/atlas.left.mid.cortex.svreg.dfs']);
-    ar=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/atlas.right.mid.cortex.svreg.dfs']);
+    v=load_nii_BIG_Lab(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/func/rest_res2standard.nii.gz']);
+    sl=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/mprage_mni.left.mid.cortex.svreg.dfs']);
+    sr=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/mprage_mni.right.mid.cortex.svreg.dfs']);
+    al=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/atlas.left.mid.cortex.svreg.dfs']);
+    ar=readdfs(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/atlas.right.mid.cortex.svreg.dfs']);
     
     datal=zeros(length(sl.vertices),size(v.img,4));
     datar=zeros(length(sr.vertices),size(v.img,4));
@@ -44,7 +44,7 @@ for subno = 1:length(l)
         fprintf('%d,',j);    
     end
     
-    save(['/big_disk/ajoshi/coding_ground/epilepsy/Cleveland/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'datal_atlas','datar_atlas','datal','datar');
+    save(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'datal_atlas','datar_atlas','datal','datar');
     subno    
     
 end
