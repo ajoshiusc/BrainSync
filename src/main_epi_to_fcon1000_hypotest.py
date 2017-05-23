@@ -81,11 +81,7 @@ diffafter = 0
 sub = lst[0]
 
 vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/data/\
-<<<<<<< HEAD
-Cleveland/subject1/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
-=======
 Cleveland/subject2/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
->>>>>>> 77e0be9ec10651cc2bc1d879c52763e54d1a94bc
 
 
 data = vrest1['func_right']
@@ -107,12 +103,8 @@ rho1rot = 0
 diffafter = 0
 diffbefore = 0
 
-<<<<<<< HEAD
-a = sp.load('../data/fcon1000_null_all_left.npz')
-=======
 a = sp.load('/big_disk/ajoshi/coding_ground/epilepsy/data/\
 fcon1000_null_all_right.npz')
->>>>>>> 77e0be9ec10651cc2bc1d879c52763e54d1a94bc
 rho_null = sp.mean(a['rho_null'], axis=0)
 
 lst = glob.glob('/big_disk/ajoshi/fcon_1000/Beijing/sub*')
@@ -178,23 +170,12 @@ rho1rot /= nsub
 #     print jj
 # sns.distplot(pval)
 #
-<<<<<<< HEAD
-dfs_left_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
-dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 1])
-view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='../data/figs/rest_rot1_fcon1000_subject1_left.png',
-               show=1)
-view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='../data/figs/rest_rot2_fcon1000_subject1_left.png',
-               show=1)
-=======
 dfs_right_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 1])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                outfile='rest_rot1_fcon1000_subject2_right.png', show=1)
 view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
                outfile='rest_rot2_fcon1000_subject2_right.png', show=1)
->>>>>>> 77e0be9ec10651cc2bc1d879c52763e54d1a94bc
 
 rho_null = rho_null.T
 rho_all1 = sp.mean(rho_all, axis=1)[:, None]
@@ -216,19 +197,8 @@ dfs_right_sm.attributes = a[1] # sp.amax((pval1, a[1]),axis=0)
 # p_adjust = stats.p_adjust(FloatVector(pval1), method = 'BH')
 # dfs_right_sm.attributes= sp.array(p_adjust)
 
-<<<<<<< HEAD
-dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, 0.05])
-view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
-               outfile='../data/figs/rest_after_rot1_fcon1000_subject1_\
-left_fdr.png', show=1)
-view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='../data/figs/rest_after_rot2_fcon1000_subject1\
-_left_fdr.png', show=1)
-=======
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 0.05])
 view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                outfile='rest_after_rot1_fcon1000_subject2_right_fdr.png', show=1)
 view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
                outfile='rest_after_rot2_fcon1000_subject2_right_fdr.png', show=1)
-
->>>>>>> 77e0be9ec10651cc2bc1d879c52763e54d1a94bc
