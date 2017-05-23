@@ -263,6 +263,20 @@ def reducepatch(surf, ratio=0.90, VERBOSITY=0):
 
     return surf
 
+
+def vtkpoly2Surf(vtkp):
+    pts = vtkp.GetPoints()
+    class surf:
+        pass
+    surf.vertices = vtk_to_numpy(pts.GetData())
+    faces1 = vtkp.GetPolys()
+    f1 = faces1.GetData()
+    f2 = vtk_to_numpy(f1)
+    f2 = f2.reshape(len(f2)//4,4)
+    surf.faces = f2[:, 1:]
+    return surf    
+    
+    
 def add_normals(s1):
     normals = vtkPolyDataNormals()
     normals.SetInput(createPolyData(s1.vertices, s1.faces))

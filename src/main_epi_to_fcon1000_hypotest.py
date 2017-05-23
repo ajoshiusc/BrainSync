@@ -32,7 +32,7 @@ fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
 dfs_right = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 .a2009s.32k_fs.reduce3.right.dfs'))
 dfs_right_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.very_smooth.right.dfs'))
+.a2009s.32k_fs.reduce3.smooth.right.dfs'))
 
 surf1 = dfs_right_sm
 X = surf1.vertices[:, 0]
@@ -93,7 +93,7 @@ vrest = data
 m = np.mean(vrest, 1)
 vrest = vrest - m[:, None]
 ''' This is added since length of fcon1000 sequences is 225'''
-vrest = vrest[:, :225] 
+vrest = vrest[:, :225]
 
 s = np.std(vrest, 1)+1e-116
 vrest1 = vrest/s[:, None]
