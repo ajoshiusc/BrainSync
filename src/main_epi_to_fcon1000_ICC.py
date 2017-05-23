@@ -147,7 +147,7 @@ for sub in lst:
     icc_all = sp.append(icc_all, ICC(vrest2l,vrest2r)[:,None], axis=1)
     
     nsub += 1
-    print sub
+    print(sub)
 
 m1 = sp.average(icc_all[vrest1l.shape[0]:,:], axis=1)
 dfs_right_sm.attributes = m1
@@ -184,7 +184,7 @@ pval=sp.zeros(tmp.shape[0])
 for jj in range(tmp.shape[0]):
     _, pval[jj] = sp.stats.mannwhitneyu(icc_all[jj,:], tmp[jj,:],
            alternative='greater')
-    print jj
+    print(jj)
 
 dfs_right_sm.attributes = sp.squeeze(pval)
 dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, 0.01])
