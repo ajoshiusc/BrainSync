@@ -7,7 +7,7 @@ l=dir('/deneb_disk/studyforrest/sub*');
 
 for subno = 1:length(l)
     fname = l(subno).name;
-    if 0%exist(['/deneb_disk/studyforrest/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'file')
+    if exist(['/deneb_disk/studyforrest/',fname,'/anat/BrainSuite/fmri_surf_dat_v2.mat'],'file')
         subno
         continue;
     end
