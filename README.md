@@ -5,12 +5,9 @@ This README would normally document whatever steps are necessary to get your app
 ### What is this repository for? ###
 
 * Quick summary
-Epilepsy analysis
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+This repository contains brainsync and other analysis codes.
 
 ### How do I get set up? ###
-
 * Summary of set up
 * Configuration
 * Dependencies
@@ -27,4 +24,6 @@ Epilepsy analysis
 ### Who do I talk to? ###
 
 * Repo owner or admin
+ajoshi@sipi.usc.edu
+
 * Other community or team contact
