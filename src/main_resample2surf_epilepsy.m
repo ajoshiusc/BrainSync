@@ -1,4 +1,5 @@
 clc;clear cll;close all;
+restoredefaultpath;
 addpath(genpath('/home/ajoshi/coding_ground/svreg/src'))
 addpath(genpath('/home/ajoshi/coding_ground/svreg/3rdParty'))
 

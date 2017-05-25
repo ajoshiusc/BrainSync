@@ -1,12 +1,12 @@
 clc;clear all;close all;
-addpath(genpath('/big_disk/ajoshi/coding_ground/svreg-matlab/src'))
-addpath(genpath('/big_disk/ajoshi/coding_ground/svreg-matlab/3rdParty'))
-addpath(genpath('/big_disk/ajoshi/coding_ground/brainreg'))
-h_var=5;
+addpath(genpath('/home/ajoshi/coding_ground/svreg/src'))
+addpath(genpath('/home/ajoshi/coding_ground/svreg/3rdParty'))
+addpath(genpath('/home/ajoshi/coding_ground/brainreg'))
+h_var=0.15;
 
 
-l=dir('/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/s*2');
-p_dir = '/big_disk/ajoshi/with_andrew';
+l=dir('/deneb_disk/studyforrest/sub*');
+p_dir = '/big_disk/ajoshi/HCP_data';
 ref_dir = fullfile(p_dir, 'reference');
 r_factor = 3;
 N = 11;
@@ -16,14 +16,14 @@ sr=readdfs('/big_disk/ajoshi/HCP_data/reference/100307.aparc.a2009s.32k_fs.reduc
 for subno = 1:length(l)
     fname = l(subno).name;
     subno
-    if ~exist(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/fmrit_reduce3_v2.mat'],'file')        
+    if ~exist(['/deneb_disk/studyforrest/',fname,'/fmrit_reduce3_v2.mat'],'file')        
         continue;
     end
-    if exist(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/fmri_tnlm_5_reduce3_v2.mat'],'file')
+    if exist(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p15_reduce3_v2.mat'],'file')
         continue;
     end
     
-    load(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/fmrit_reduce3_v2.mat']);
+    load(['/deneb_disk/studyforrest/',fname,'/fmrit_reduce3_v2.mat']);
     
     figure;patch('faces',sr.faces,'vertices',sr.vertices,'facevertexcdata',double(isnan(fmri_right(:,1))),'edgecolor','none','facecolor','interp');
     axis equal;axis off;camlight;material dull;
@@ -32,7 +32,7 @@ for subno = 1:length(l)
     
     func_right = tNLM_SpatioTemporalData(fmri_right, conn.v_conn_right, h_var);
     
-    save(['/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/',fname,'/fmri_tnlm_5_reduce3_v2.mat'], 'func_left', 'func_right');
+    save(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p15_reduce3_v2.mat'], 'func_left', 'func_right');
 end
 
 

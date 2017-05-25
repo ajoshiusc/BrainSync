@@ -43,13 +43,13 @@ def surf_weight(surf1):
     y3 = np.einsum('ij,ij->i', yunit, (V3-V1))/np.linalg.norm(yunit, axis=1)
     sqrt_DT = (np.abs((x1*y2 - y1*x2)+(x2*y3 - y2*x3)+(x3*y1 - y3*x1)))
     Ar = 0.5*(np.abs((x1*y2 - y1*x2)+(x2*y3 - y2*x3)+(x3*y1 - y3*x1)))
-    
+
     TC = face_v_conn(surf1)
     Wt = (1.0/3.0)*(TC)
     # Wt = sp.sparse.spdiags(Wt*Ar, (0), NumTri, NumTri)
     surf_weight = sp.sqrt(Wt*Ar)
     return surf_weight
-    
+
 
 def patch_color_labels(s,freq=[1],cmap='Paired', shuffle=True):
     ''' color by freq of labels '''
@@ -274,9 +274,9 @@ def vtkpoly2Surf(vtkp):
     f2 = vtk_to_numpy(f1)
     f2 = f2.reshape(len(f2)//4,4)
     surf.faces = f2[:, 1:]
-    return surf    
-    
-    
+    return surf
+
+
 def add_normals(s1):
     normals = vtkPolyDataNormals()
     normals.SetInput(createPolyData(s1.vertices, s1.faces))
@@ -337,6 +337,7 @@ vtkWindowToImageFilter, vtkPNGWriter)
 
 #from PIL import Image
 
+
 def view_patch_vtk(r, azimuth=90, elevation=0, roll=-90, outfile=0, show=1):
 
     c = r.vColor
@@ -368,7 +369,7 @@ def view_patch_vtk(r, azimuth=90, elevation=0, roll=-90, outfile=0, show=1):
     normals.SetInputData(r)
     normals.ComputePointNormalsOn()
     normals.ComputeCellNormalsOn()
-#    normals.SplittingOff()
+    #normals.SplittingOff()
     normals.AutoOrientNormalsOn()
     normals.ConsistencyOn()
     #normals.SetFeatureAngle(4.01)

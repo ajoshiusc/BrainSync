@@ -5,7 +5,7 @@ Created on Tue Aug 16 15:51:16 2016
 @author: ajoshi
 """
 import sys
-#sys.path.append('/big_disk/ajoshi/coding_ground/cortical_parcellation/src/')
+#sys.path.append('/home/ajoshi/coding_ground/cortical_parcellation/src/')
 
 import nibabel.freesurfer.io as fsio
 from surfproc import view_patch_vtk, patch_color_attrib
@@ -17,7 +17,7 @@ import scipy.io
 import nibabel as nib
 import glob
 
-p_dir_ref = '/big_disk/ajoshi/HCP_data'
+p_dir_ref = '/home/ajoshi/HCP_data'
 ref_dir = os.path.join(p_dir_ref, 'reference')
 ref = '100307'
 
@@ -38,8 +38,7 @@ class bci:
     pass
 
 
-
-lst = glob.glob('/big_disk/ajoshi/coding_ground/epilepsy/data/Cleveland/s*2')
+lst = glob.glob('/deneb_disk/studyforrest/sub*')
 
 for sub in lst:
 #    if os.path.exists(sub + '/fmrit_reduce3.mat'):
@@ -49,8 +48,8 @@ for sub in lst:
 
     ''' Right Hemisphere '''
     ''' BCI to FS processed BCI '''
-    bci_BrainSuite = readdfs('/big_disk/ajoshi/coding_ground/svreg-matlab/BCI-DNI\
-_brain_atlas_refined/BCI-DNI_brain.right.inner.cortex.dfs')
+    bci_BrainSuite = readdfs('/home/ajoshi/coding_ground/svreg/BCI-DNI\
+_brain_atlas/BCI-DNI_brain.right.inner.cortex.dfs')
 
     data1 = scipy.io.loadmat(sub + '/anat/BrainSuite/fmri_surf_dat_v2.mat')
     bci_BrainSuite.fmri = data1['datar_atlas'].squeeze()
@@ -91,8 +90,8 @@ Linear/Native/100307.R.very_inflated.native.surf.gii')
 
     ''' Left Hemisphere '''
     ''' BCI to FS processed BCI '''
-    bci_BrainSuite = readdfs('/big_disk/ajoshi/coding_ground/svreg-matlab/BCI-DNI\
-_brain_atlas_refined/BCI-DNI_brain.left.inner.cortex.dfs')
+    bci_BrainSuite = readdfs('/home/ajoshi/coding_ground/svreg/BCI-DNI\
+_brain_atlas/BCI-DNI_brain.left.inner.cortex.dfs')
 
 #    data1 = scipy.io.loadmat(os.path.join(sub + '/anat/BrainSuite/fmri_surf_dat.mat'))
     bci_BrainSuite.fmri = data1['datal_atlas'].squeeze()
