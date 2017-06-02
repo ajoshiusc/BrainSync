@@ -40,7 +40,10 @@ sub2seg2 = normdata(fmri_sub22['func_'+hemi][:, :420])
 rho_before = sp.sum(sub1seg1*sub1seg2, axis=1)/sub1seg1.shape[1]
 
 dfs_ref = patch_color_attrib(dfs_ref, rho_before, clim=[0, .7])
-view_patch_vtk(dfs_ref)
+view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
+               outfile='before2_seg1to2_1.png')
+view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
+               outfile='before2_seg1to2_2.png')
 
 _, Rot12 = rot_sub_data(ref=sub2seg2, sub=sub1seg1)
 
@@ -49,6 +52,14 @@ sub1seg1rot = sp.dot(sub1seg1, Rot12.T)
 rho_after = sp.sum(sub1seg1rot*sub1seg2, axis=1)/sub2seg2.shape[1]
 dfs_ref = patch_color_attrib(dfs_ref, rho_after, clim=[0, .7])
 writedfs('temp.dfs', dfs_ref)
-view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90)
-view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90)
-#view_patch(dfs_ref)
+view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
+               outfile='after2_seg1to2_1.png')
+view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
+               outfile='after2_seg1to2_2.png')
+rho_direct22 = sp.sum(sub1seg2*sub2seg2, axis=1)/sub2seg2.shape[1]
+dfs_ref = patch_color_attrib(dfs_ref, rho_direct22, clim=[0, .7])
+
+view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
+               outfile='direct2_seg2to2_1.png')
+view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
+               outfile='direct2_seg2to2_2.png')
