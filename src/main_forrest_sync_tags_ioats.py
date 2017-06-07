@@ -43,24 +43,29 @@ faceseg2 = normdata(faceseg2[None, :]).squeeze()
 fseg1 = normdata(fseg1)
 fseg2 = normdata(fseg2)
 
+#fn = sp.load('movie_corr.npz')
+#rho_direct22 = fn['rho_direct22']
+#ind = rho_direct22 > 0.4
+#fseg1 = fseg1[ind, :]
+#fseg2 = fseg2[ind, :]
+
 fseg1_2, R = rot_sub_data(ref=fseg2, sub=fseg1)
 
-#faceseg1 = gaussian_filter(faceseg1, 2)
-#faceseg2 = gaussian_filter(faceseg2, 2)
-faceseg1_2 = gaussian_filter(sp.dot(faceseg1, R.T), 6)
+faceseg1_2 = sp.dot(faceseg1, R.T)
 
+faceseg1_2 = gaussian_filter(faceseg1_2, 4)
+
+faceseg1 = gaussian_filter(faceseg1, 6)/1.4
+faceseg2 = gaussian_filter(faceseg2, 6)/1.4
+faceseg1 = faceseg1[:180]
+faceseg2 = faceseg2[:180]
+faceseg1_2 = faceseg1_2[:180]
 
 print(sp.linalg.norm(fseg1-fseg2), sp.linalg.norm(fseg1_2-fseg2), sp.linalg.norm(fseg1_2-fseg1))
 print(sp.dot(faceseg1,faceseg2)/len(faceseg2), sp.dot(faceseg1_2,faceseg2)/len(faceseg2), sp.dot(faceseg1_2,faceseg1)/len(faceseg2))
 
-faceseg1 = gaussian_filter(faceseg1, 6)/1.4
-faceseg2 = gaussian_filter(faceseg2, 6)/1.4
-faceseg1=faceseg1[:180]
-faceseg2=faceseg2[:180]
-faceseg1_2=faceseg1_2[:180]
+plt.plot(faceseg1, 'b')
+plt.plot(faceseg2, 'r')
+plt.plot(faceseg1_2, 'k')
 
-plt.plot(faceseg1,'b')
-plt.plot(faceseg2,'r')
-plt.plot(faceseg1_2,'k')
-
-plt.savefig('face_annotation_sync.png');
+plt.savefig('face_annotation_sync.png')

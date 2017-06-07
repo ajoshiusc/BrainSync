@@ -52,7 +52,15 @@ view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
 
 rho_direct22 = sp.sum(sub1seg2*sub2seg2, axis=1)/sub2seg2.shape[1]
 dfs_ref = patch_color_attrib(dfs_ref, rho_direct22, clim=[0, .7])
+sp.savez('movie_corr.npz', rho_direct22=rho_direct22)
 view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
                outfile='direct_seg2to2_1.png')
 view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
                outfile='direct_seg2to2_2.png')
+
+rho_direct22_21 = rho_direct22 - rho_after
+dfs_ref = patch_color_attrib(dfs_ref, rho_direct22_21, clim=[-.1, .1])
+view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
+               outfile='direct_seg2to2_1_sub.png')
+view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
+               outfile='direct_seg2to2_2_sub.png')
