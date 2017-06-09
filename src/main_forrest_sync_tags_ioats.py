@@ -15,7 +15,7 @@ from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 
 p_dir_ref = '/big_disk/ajoshi/HCP_data/'
-hemi = 'right'
+hemi = 'left'
 ref = '100307'
 TR = 2
 fmri_run3 = loadmat('/deneb_disk/studyforrest/sub-02-run3\
