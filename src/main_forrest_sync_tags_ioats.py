@@ -15,7 +15,7 @@ from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
 
 p_dir_ref = '/big_disk/ajoshi/HCP_data/'
-hemi = 'left'
+hemi = 'right'
 ref = '100307'
 TR = 2
 fmri_run3 = loadmat('/deneb_disk/studyforrest/sub-02-run3\
@@ -69,3 +69,14 @@ plt.plot(faceseg2, 'r')
 plt.plot(faceseg1_2, 'k')
 
 plt.savefig('face_annotation_sync.png')
+
+rho_21 = sp.sum(fseg1_2*fseg2, axis=1)/fseg2.shape[1]
+
+dfs_ref = patch_color_attrib(dfs_ref, rho_21, clim=[0.5, 1])
+view_patch_vtk(dfs_ref, azimuth=90, elevation=180, roll=90,
+               outfile='sync1_2_1_right.png')
+view_patch_vtk(dfs_ref, azimuth=-90, elevation=180, roll=-90,
+               outfile='sync1_2_2_right.png')
+
+
+
