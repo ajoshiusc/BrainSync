@@ -53,10 +53,10 @@ fseg1_2, R = rot_sub_data(ref=fseg2, sub=fseg1)
 
 faceseg1_2 = sp.dot(faceseg1, R.T)
 
-faceseg1_2 = gaussian_filter(faceseg1_2, 4)
+faceseg1_2 = gaussian_filter(faceseg1_2, 6)
 
-faceseg1 = gaussian_filter(faceseg1, 6)/1.4
-faceseg2 = gaussian_filter(faceseg2, 6)/1.4
+faceseg1 = gaussian_filter(faceseg1, 6)/1.6
+faceseg2 = gaussian_filter(faceseg2, 6)/1.6
 faceseg1 = faceseg1[:180]
 faceseg2 = faceseg2[:180]
 faceseg1_2 = faceseg1_2[:180]
@@ -68,7 +68,7 @@ plt.plot(faceseg1, 'b')
 plt.plot(faceseg2, 'r')
 plt.plot(faceseg1_2, 'k')
 
-plt.savefig('face_annotation_sync.png')
+plt.savefig('fear_annotation_sync.png')
 
 rho_21 = sp.sum(fseg1_2*fseg2, axis=1)/fseg2.shape[1]
 
