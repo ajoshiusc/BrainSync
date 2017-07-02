@@ -553,7 +553,7 @@ def readdfsVTK(fname):
 
 def smooth_patch(surf, iterations=15, relaxation=0.1):
     smoothFilter = vtkSmoothPolyDataFilter()
-    smoothFilter.SetInput(createPolyData(surf.vertices, surf.faces))
+    smoothFilter.SetInputData(createPolyData(surf.vertices, surf.faces))
     smoothFilter.SetNumberOfIterations(iterations)
     smoothFilter.SetRelaxationFactor(relaxation)
     smoothFilter.Update()

@@ -38,11 +38,12 @@ class bci:
     pass
 
 
-lst = glob.glob('/deneb_disk/studyforrest/sub*')
+lst = glob.glob('/deneb_disk/studyforrest/sub-10*run3')
 
 for sub in lst:
 #    if os.path.exists(sub + '/fmrit_reduce3.mat'):
 #        continue
+    print sub
     if not os.path.exists(sub + '/anat/BrainSuite/fmri_surf_dat_v2.mat'):
         continue
 

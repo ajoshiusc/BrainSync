@@ -2,10 +2,10 @@ clc;clear all;close all;
 addpath(genpath('/home/ajoshi/coding_ground/svreg/src'))
 addpath(genpath('/home/ajoshi/coding_ground/svreg/3rdParty'))
 addpath(genpath('/home/ajoshi/coding_ground/brainreg'))
-h_var=0.15;
+h_var=0.5;
 
 
-l=dir('/deneb_disk/studyforrest/sub*');
+l=dir('/deneb_disk/studyforrest/sub-10*');
 p_dir = '/big_disk/ajoshi/HCP_data';
 ref_dir = fullfile(p_dir, 'reference');
 r_factor = 3;
@@ -19,7 +19,7 @@ for subno = 1:length(l)
     if ~exist(['/deneb_disk/studyforrest/',fname,'/fmrit_reduce3_v2.mat'],'file')        
         continue;
     end
-    if exist(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p15_reduce3_v2.mat'],'file')
+    if exist(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p5_reduce3_v2.mat'],'file')
         continue;
     end
     
@@ -32,7 +32,7 @@ for subno = 1:length(l)
     
     func_right = tNLM_SpatioTemporalData(fmri_right, conn.v_conn_right, h_var);
     
-    save(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p15_reduce3_v2.mat'], 'func_left', 'func_right');
+    save(['/deneb_disk/studyforrest/',fname,'/fmri_tnlm_0p5_reduce3_v2.mat'], 'func_left', 'func_right');
 end
 
 
