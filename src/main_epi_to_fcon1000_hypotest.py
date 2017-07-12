@@ -32,7 +32,7 @@ fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
 dfs_hemi = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 .a2009s.32k_fs.reduce3.' + hemi + '.dfs'))
 dfs_hemi_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.smooth.' + hemi + '.dfs'))
+.a2009s.32k_fs.reduce3.very_smooth.' + hemi + '.dfs'))
 
 surf1 = dfs_hemi_sm
 X = surf1.vertices[:, 0]
@@ -81,7 +81,7 @@ diffafter = 0
 sub = lst[0]
 
 vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/data/\
-Cleveland/subject2/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
+Cleveland/subject1/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
 
 
 data = vrest1['func_' + hemi + '']
@@ -93,7 +93,7 @@ vrest = data
 m = np.mean(vrest, 1)
 vrest = vrest - m[:, None]
 ''' This is added since length of fcon1000 sequences is 225'''
-vrest = vrest[:, :225]
+#vrest = vrest[:, :225]
 
 s = np.std(vrest, 1)+1e-116
 vrest1 = vrest/s[:, None]
@@ -127,7 +127,7 @@ for sub in lst:
     if not os.path.exists(sub + '/fmri_tnlm_5_reduce3_v2.mat'):
         continue
 
-    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')
+    vrest2 = scipy.io.loadmat(sub + '/fmri_tnlm_5_reduce3_v2.mat')        
     data = vrest2['func_' + hemi + '']
     indx = sp.isnan(data)
     data[indx] = 0
@@ -169,13 +169,15 @@ rho1rot /= nsub
 #                                         # alternative='greater')
 #     print jj
 # sns.distplot(pval)
-#
+dfs_hemi_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+.a2009s.32k_fs.reduce3.smooth.' + hemi + '.dfs'))
+
 dfs_hemi_sm.attributes = sp.squeeze(rho_all.mean(axis=1))
 dfs_hemi_sm = patch_color_attrib(dfs_hemi_sm, clim=[0, 1])
 view_patch_vtk(dfs_hemi_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_rot1_fcon1000_subject2_' + hemi + '.png', show=1)
+               outfile='rest_rot1_fcon1000_subject1_' + hemi + '.png', show=1)
 view_patch_vtk(dfs_hemi_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_rot2_fcon1000_subject2_' + hemi + '.png', show=1)
+               outfile='rest_rot2_fcon1000_subject1_' + hemi + '.png', show=1)
 
 rho_null = rho_null.T
 rho_all1 = sp.mean(rho_all, axis=1)[:, None]
@@ -186,7 +188,7 @@ for jj in range(rho_all1.shape[1]):
 
 pval1 = 1-pval.mean(axis=1)/rho_null.shape[1]
 a = multipletests(pvals=pval1, alpha=0.05, method='fdr_bh')
-dfs_hemi_sm.attributes = a[1] # sp.amax((pval1, a[1]),axis=0)
+dfs_hemi_sm.attributes = a[1]+1 # sp.amax((pval1, a[1]),axis=0)
 # sns.distplot(pval1)
 
 # from rpy2.robjects.packages import importr
@@ -199,6 +201,6 @@ dfs_hemi_sm.attributes = a[1] # sp.amax((pval1, a[1]),axis=0)
 
 dfs_hemi_sm = patch_color_attrib(dfs_hemi_sm, clim=[0, 0.05])
 view_patch_vtk(dfs_hemi_sm, azimuth=90, elevation=180, roll=90,
-               outfile='rest_after_rot1_fcon1000_subject2_' + hemi + '_fdr.png', show=1)
+               outfile='rest_after_rot1_fcon1000_subject1_' + hemi + '_fdr.png', show=1)
 view_patch_vtk(dfs_hemi_sm, azimuth=-90, elevation=180, roll=-90,
-               outfile='rest_after_rot2_fcon1000_subject2_' + hemi + '_fdr.png', show=1)
+               outfile='rest_after_rot2_fcon1000_subject1_' + hemi + '_fdr.png', show=1)
