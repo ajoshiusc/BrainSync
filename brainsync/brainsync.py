@@ -23,10 +23,10 @@ may not work')
 
     pre_signal[sp.isnan(pre_signal)] = 0
     mean_vector = sp.mean(pre_signal, axis=0, keepdims=True)
-    normed_signal = pre_signal - sp.dot(ones_vector, mean_vector)
+    normed_signal = pre_signal - mean_vector # sp.dot(ones_vector, mean_vector)
     std_vector = sp.std(normed_signal, axis=0, keepdims=True)
     std_vector[std_vector == 0] = 1
-    normed_signal = normed_signal / sp.dot(ones_vector, std_vector)
+    normed_signal = normed_signal / std_vector# sp.dot(ones_vector, std_vector)
 
     return normed_signal, mean_vector, std_vector
 

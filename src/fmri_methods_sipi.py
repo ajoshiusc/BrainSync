@@ -193,7 +193,7 @@ def rot_sub_data(ref,sub, area_weight=[]):
     u,s,v=sp.linalg.svd(xcorr)
     R=sp.dot(v.T,u.T)
 #    print sp.linalg.det(R)
-    return sp.dot(sub,R.T), R
+    return sp.dot(sub,R.T), R, xcorr
 
 def normdata(data=0):
     indx = sp.isnan(data)

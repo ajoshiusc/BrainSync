@@ -1,79 +1,74 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug  4 05:39:43 2016
-
-@author: ajoshi
-"""
-import sys
+# ||AUM||
 import scipy.io
 import scipy as sp
-import os
 import numpy as np
-import nibabel as nib
 from dfsio import readdfs, writedfs
-from surfproc import view_patch, view_patch_vtk, smooth_surf_function,\
-                     face_v_conn, patch_color_attrib
-from fmri_methods_sipi import rot_sub_data, reorder_labels, normdata
+from mayavi import mlab
+from fmri_methods_sipi import rot_sub_data
+#import h5py
+import os
+from surfproc import view_patch, view_patch_vtk, get_cmap, smooth_patch, patch_color_attrib, smooth_surf_function
+from sklearn.cluster import SpectralClustering
+from sklearn.decomposition import DictionaryLearning
+from scipy.stats import trim_mean
+from sklearn.metrics.pairwise import pairwise_distances
+from sklearn.utils.linear_assignment_ import linear_assignment
+from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
-from scipy.ndimage.filters import gaussian_filter
-import glob
-from statsmodels.stats.multitest import multipletests
+from brainsync import brainSync, normalizeData
 
-p_dir = '/big_disk/ajoshi/HCP_data'
-p_dir_ref = '/big_disk/ajoshi/HCP_data/'
+p_dir = '/big_disk/ajoshi/HCP_data/data'
+p_dir_ref = '/big_disk/ajoshi/HCP_data'
 lst = os.listdir(p_dir)
 r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
-nClusters = 3
+nClusters = 2
 
 ref = '100307'
+sub = '100307'
+print sub, ref
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
-dfs_left = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.left.dfs'))
-dfs_left_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.reduce3.very_smooth.left.dfs'))
+fname1 = os.path.join(ref_dir, fn1)
+msk = scipy.io.loadmat(fname1)  # h5py.File(fname1);
+dfs_left = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc.a2009s.\
+32k_fs.reduce3.left.dfs'))
+dfs_left_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc.\
+a2009s.32k_fs.reduce3.very_smooth.left.dfs'))
+count1 = 0
+roilist = [30, 72, 9, 47]
 
-surf1 = dfs_left_sm
+datasub = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST2_RL.\
+reduce3.ftdata.NLM_11N_hvar_25.mat'))
+dataref = scipy.io.loadmat(os.path.join(p_dir, ref, ref + '.rfMRI_REST1_RL.\
+reduce3.ftdata.NLM_11N_hvar_25.mat'))
 
-# smooth_surf_function(dfs_left_sm, Wt*Ar*0.1, a1=0, a2=1)
+LR_flag = msk['LR_flag']
+LR_flag = np.squeeze(LR_flag) > 0
+data = dataref['ftdata_NLM']
+sub1, _, _ = normalizeData(data[LR_flag, :].T)
 
-# sub = '110411'
-# p_dir = '/home/ajoshi/data/HCP_data'
-lst = os.listdir('/big_disk/ajoshi/HCP5')
-rho1 = 0
-rho1rot = 0
-rho2 = 0
-rho2rot = 0
-# lst = [lst[0]]
-diffbefore = 0
-diffafter = 0
+data = datasub['ftdata_NLM'][LR_flag, :]
+ind = sp.std(data, axis=1) > 0 #1e-116
+perm1 = sp.random.permutation(len(ind))
+data[ind, :] = data[ind[perm1], :]
+sub2, _, _ = normalizeData(data.T)
 
-sub = lst[0]
+rho = np.mean(sub1*sub2, axis=0)
+dfs_left_sm = patch_color_attrib(dfs_left_sm, ind, clim=[-1, 1])
+#dfs_left_sm.vColor[sp.absolute(rho) < 1e-116, :] = 0.5
+view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180,
+               roll=90, outfile='sub1to2_view1.png', show=1)
+view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=-180,
+               roll=-90, outfile='sub1to2_view2.png', show=1)
 
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/fcon_1000/Beijing/sub74386/fmrit_reduce3_v2.mat')  # h5py.File(fname1);
-data = vrest1['fmri_left']
-vrest1 = normdata(data)
+sub_rot, R1 = brainSync(X=sub1, Y=sub2)
+rho = sp.mean(sub1*sub_rot, axis=0)
+dfs_left.attributes = rho
+dfs_left_sm = patch_color_attrib(dfs_left_sm, rho, clim=[-1, 1])
+dfs_left_sm.vColor[sp.absolute(rho) < 1e-116, :] = 0.5
+view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180,
+               roll=90, outfile='sub1to2_view1_rot.png', show=1)
+view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=-180,
+               roll=-90, outfile='sub1to2_view2_rot.png', show=1)
 
-vrest2 = scipy.io.loadmat('/big_disk/ajoshi/fcon_1000/Beijing/sub56136/fmrit_reduce3_v2.mat')  # h5py.File(fname1);
-data = vrest2['fmri_left']
-vrest2d = normdata(data)
-synced={}
-synced['synced_left'],_ = rot_sub_data(ref=vrest1, sub=vrest2d)
-synced['left1']=vrest1
-synced['left2']=vrest2d
-
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/fcon_1000/Beijing/sub74386/fmrit_reduce3_v2.mat')  # h5py.File(fname1);
-data = vrest1['fmri_right']
-vrest1 = normdata(data)
-
-vrest2 = scipy.io.loadmat('/big_disk/ajoshi/fcon_1000/Beijing/sub56136/fmrit_reduce3_v2.mat')  # h5py.File(fname1);
-data = vrest2['fmri_right']
-vrest2d = normdata(data)
-synced['synced_right'],_ = rot_sub_data(ref=vrest1, sub=vrest2d)
-synced['right1']=vrest1
-synced['right2']=vrest2d
-
-
-
-sp.io.savemat('out_synced.mat',synced)
