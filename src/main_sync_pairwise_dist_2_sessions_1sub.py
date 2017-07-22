@@ -33,7 +33,7 @@ rho_rho = []
 rho_all = []
 #lst=lst[:1]
 labs_all = sp.zeros((len(dfs_left.labels), len(lst)))
-sub = lst[1]
+sub = lst[0]
 data = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST1_LR.\
 reduce3.ftdata.NLM_11N_hvar_25.mat'))
 LR_flag = msk['LR_flag']
@@ -42,8 +42,8 @@ data = data['ftdata_NLM']
 temp = data[LR_flag, :]
 d1 = temp.T
 
-sub = lst[2]
-data = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST1_LR.\
+sub = lst[0]
+data = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST2_LR.\
 reduce3.ftdata.NLM_11N_hvar_25.mat'))
 LR_flag = msk['LR_flag']
 LR_flag = np.squeeze(LR_flag) != 0
@@ -53,7 +53,7 @@ temp = data[LR_flag, :]
 d2 = temp.T
 
 ind = 0
-IntV = range(20, 1200, 10)
+IntV = range(10, 1200, 10)
 rms = sp.zeros(len(IntV))
 for len1 in IntV:
     sub_data1, _, _ = normalizeData(d1[:len1, :])
@@ -62,13 +62,13 @@ for len1 in IntV:
     sub_data1 = sub_data1[:, s > 1e-2]
     sub_data2 = sub_data2[:, s > 1e-2]
     sub_data2_sync, Rot = brainSync(X=sub_data1, Y=sub_data2)
-    rms[ind] = sp.linalg.norm(sub_data2_sync - sub_data1)/((sp.linalg.norm(
-            sub_data2)**0.5)*(sp.linalg.norm(sub_data1)**0.5))
+    rms[ind] = sp.linalg.norm(sub_data2_sync - sub_data1)/sp.sqrt(
+            sp.linalg.norm(sub_data2_sync)**2 + sp.linalg.norm(sub_data1)**2)
     ind += 1
-    print len1
+    print len1, ':', rms[ind-1]
 
 plt.plot(IntV, rms)
-plt.ylim(ymax = 1, ymin = 0.45)
-plt.savefig('sync_vs_len_diff_sub.pdf')
+plt.ylim(ymax=0.7, ymin=0.30)
+plt.savefig('sync_vs_len_same_sub2.pdf')
 plt.show()
 
