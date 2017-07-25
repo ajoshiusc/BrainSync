@@ -24,8 +24,8 @@ r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
 nClusters = 2
 
-ref = '100307'
-sub = '100307'
+ref = '196750'
+sub = '196750'
 print sub, ref
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
@@ -35,12 +35,10 @@ dfs_left = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc.a2009s.\
 32k_fs.reduce3.left.dfs'))
 dfs_left_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc.\
 a2009s.32k_fs.reduce3.very_smooth.left.dfs'))
-count1 = 0
-roilist = [30, 72, 9, 47]
 
-datasub = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST2_RL.\
+datasub = scipy.io.loadmat(os.path.join(p_dir, sub, sub + '.rfMRI_REST1_RL.\
 reduce3.ftdata.NLM_11N_hvar_25.mat'))
-dataref = scipy.io.loadmat(os.path.join(p_dir, ref, ref + '.rfMRI_REST1_RL.\
+dataref = scipy.io.loadmat(os.path.join(p_dir, ref, ref + '.rfMRI_REST2_RL.\
 reduce3.ftdata.NLM_11N_hvar_25.mat'))
 
 LR_flag = msk['LR_flag']
@@ -49,13 +47,13 @@ data = dataref['ftdata_NLM']
 sub1, _, _ = normalizeData(data[LR_flag, :].T)
 
 data = datasub['ftdata_NLM'][LR_flag, :]
-ind = sp.std(data, axis=1) > 0 #1e-116
-perm1 = sp.random.permutation(len(ind))
-data[ind, :] = data[ind[perm1], :]
+#ind = sp.std(data, axis=1) > 0 #1e-116
+#perm1 = sp.random.permutation(len(ind))
+#data[ind, :] = data[ind[perm1], :]
 sub2, _, _ = normalizeData(data.T)
 
-rho = np.mean(sub1*sub2, axis=0)
-dfs_left_sm = patch_color_attrib(dfs_left_sm, ind, clim=[-1, 1])
+rho = np.sum(sub1*sub2, axis=0)
+dfs_left_sm = patch_color_attrib(dfs_left_sm, rho, clim=[-1, 1])
 #dfs_left_sm.vColor[sp.absolute(rho) < 1e-116, :] = 0.5
 view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180,
                roll=90, outfile='sub1to2_view1.png', show=1)
@@ -63,7 +61,7 @@ view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=-180,
                roll=-90, outfile='sub1to2_view2.png', show=1)
 
 sub_rot, R1 = brainSync(X=sub1, Y=sub2)
-rho = sp.mean(sub1*sub_rot, axis=0)
+rho = sp.sum(sub1*sub_rot, axis=0)
 dfs_left.attributes = rho
 dfs_left_sm = patch_color_attrib(dfs_left_sm, rho, clim=[-1, 1])
 dfs_left_sm.vColor[sp.absolute(rho) < 1e-116, :] = 0.5
