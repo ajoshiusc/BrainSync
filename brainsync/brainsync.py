@@ -12,8 +12,8 @@ def normalizeData(pre_signal):
      variance in time.
      pre_signal: Time x Original Vertices data
      normed_signal: Normalized (Time x Vertices) signal
-     mean_vector: Vertices x 1 mean for each time series
-     std_vector : Vertices x 1 std dev for each time series
+     mean_vector: 1 x Vertices mean for each time series
+     std_vector : 1 x Vertices norm for each time series
     """
     ones_vector = sp.ones([pre_signal.shape[0], 1])
 
@@ -23,10 +23,10 @@ may not work')
 
     pre_signal[sp.isnan(pre_signal)] = 0
     mean_vector = sp.mean(pre_signal, axis=0, keepdims=True)
-    normed_signal = pre_signal - mean_vector # sp.dot(ones_vector, mean_vector)
+    normed_signal = pre_signal - mean_vector
     std_vector = sp.std(normed_signal, axis=0, keepdims=True)
     std_vector[std_vector == 0] = 1
-    normed_signal = normed_signal / std_vector# sp.dot(ones_vector, std_vector)
+    normed_signal = normed_signal / std_vector
 
     return normed_signal, mean_vector, std_vector
 
