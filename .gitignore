@@ -3,3 +3,7 @@
 *.dfs
 *.pdf
 *.npz
+*.nii.*
+*.dfc
+*.dfs
+data/*
