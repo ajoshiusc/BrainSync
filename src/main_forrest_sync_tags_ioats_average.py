@@ -16,13 +16,13 @@ import matplotlib.pyplot as plt
 
 p_dir_ref = '/big_disk/ajoshi/HCP_data/'
 hemi = 'left'
-ref = '100307'
+ref = '196750'
 TR = 2
 faceseg1_2_avg = 0
 sublist=[1,2,3,4,5,6,9,10]
 for subid in sublist:
     subids = "%02d" % subid
-    print subids
+    print(subids)
 
     fmri_run3 = loadmat('/deneb_disk/studyforrest/sub-%s-run3\
 /fmri_tnlm_0p5_reduce3_v2.mat' % subids)  # h5py.File(fname1);
@@ -36,7 +36,7 @@ for subid in sublist:
 
     annot = pd.read_csv('/deneb_disk/studyforrest/ioats_2s_av_allchar.csv')
 
-    face_annot = sp.array(annot['audio'])
+    face_annot = sp.array(annot['face'])
 
     tst = int(1760.0/TR)
     tend = int(2620.0/TR)
@@ -55,7 +55,7 @@ for subid in sublist:
 #fseg1 = fseg1[ind, :]
 #fseg2 = fseg2[ind, :]
 
-    fseg1_2, R = rot_sub_data(ref=fseg2, sub=fseg1)
+    fseg1_2, R, _ = rot_sub_data(ref=fseg2, sub=fseg1)
 
     faceseg1_2 = sp.dot(faceseg1, R.T)
 
