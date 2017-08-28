@@ -73,6 +73,15 @@ plt.show()
 diffafter = gaussian_filter(diffafter, [2, 0])
 nV = len(dfs_right_sm.vertices)
 for ind in sp.arange(frest.shape[0]):
+<<<<<<< HEAD
+    dfs_left_sm.attributes = sp.absolute(diffafter[ind,:])
+    fname1 = 'rest_vs_motor_after_rot_%d_d.png' % ind
+    fname2 = 'rest_vs_motor_after_rot_%d_m.png' % ind
+    dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, .05])
+    view_patch_vtk(dfs_left_sm, azimuth=110, elevation=180, roll=90,
+                   outfile=fname1, show=0)
+    view_patch_vtk(dfs_left_sm, azimuth=-110, elevation=180, roll=-90,
+=======
     dfs_right_sm.attributes = sp.absolute(diffafter[ind, (nV):])
     fname1 = 'rest_after_rot_right_%d_d.png' % ind
     fname2 = 'rest_after_rot_right_%d_m.png' % ind
@@ -80,6 +89,7 @@ for ind in sp.arange(frest.shape[0]):
     view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                    outfile=fname1, show=0)
     view_patch_vtk(dfs_right_sm, azimuth=-120, elevation=180, roll=-90,
+>>>>>>> 504705e326cdce6f86354e47da907b62b28e8452
                    outfile=fname2, show=0)
     print ind,
 #
