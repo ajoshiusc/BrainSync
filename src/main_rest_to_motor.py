@@ -69,10 +69,10 @@ for ind in sp.arange(frest.shape[0]):
     dfs_left_sm.attributes = sp.absolute(diffafter[ind,:])
     fname1 = 'rest_vs_motor_after_rot_%d_d.png' % ind
     fname2 = 'rest_vs_motor_after_rot_%d_m.png' % ind
-    dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, .01])
-    view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180, roll=90,
+    dfs_left_sm = patch_color_attrib(dfs_left_sm, clim=[0, .05])
+    view_patch_vtk(dfs_left_sm, azimuth=110, elevation=180, roll=90,
                    outfile=fname1, show=0)
-    view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=180, roll=-90,
+    view_patch_vtk(dfs_left_sm, azimuth=-110, elevation=180, roll=-90,
                    outfile=fname2, show=0)
     print ind, 
 #
