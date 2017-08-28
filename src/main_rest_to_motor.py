@@ -36,10 +36,17 @@ dfs_right_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 
 sub = lst[0]
 
+#dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
+#tfMRI_MOTOR_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
+#fmotor = dat['ftdata_NLM'].T
+#fmotor,_,_=normalizeData(fmotor)
+
 dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
-tfMRI_MOTOR_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
+rfMRI_REST1_RL.reduce3.ftdata.NLM_11N_hvar_5.mat')
 fmotor = dat['ftdata_NLM'].T
+fmotor = fmotor[:284, :]
 fmotor,_,_=normalizeData(fmotor)
+
 
 dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
 rfMRI_REST1_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
@@ -51,7 +58,7 @@ diffbefore = fmotor - frest
 
 fmotor,_=brainSync(frest,fmotor)
 
-diffafter = fmotor - frest
+diffafter = fmotor - 0*frest
 
 plt.imshow(sp.absolute(diffbefore), aspect='auto', clim=(0, 0.1))
 
@@ -67,8 +74,8 @@ diffafter = gaussian_filter(diffafter, [2, 0])
 nV = len(dfs_right_sm.vertices)
 for ind in sp.arange(frest.shape[0]):
     dfs_right_sm.attributes = sp.absolute(diffafter[ind, (nV):])
-    fname1 = 'rest_vs_motor_after_rot_right_%d_d.png' % ind
-    fname2 = 'rest_vs_motor_after_rot_right_%d_m.png' % ind
+    fname1 = 'rest_after_rot_right_%d_d.png' % ind
+    fname2 = 'rest_after_rot_right_%d_m.png' % ind
     dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0, .1])
     view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
                    outfile=fname1, show=0)

@@ -12,13 +12,13 @@ from PIL import Image
 x_offset = 0
 for ind in range(284):
     im1name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
-rest_vs_motor_after_rot_left_%d_m.png' % ind
+rest_after_rot_left_%d_m.png' % ind
     im2name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
-rest_vs_motor_after_rot_left_%d_d.png' % ind
+rest_after_rot_left_%d_d.png' % ind
     im3name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
-rest_vs_motor_after_rot_right_%d_m.png' % ind
+rest_after_rot_right_%d_m.png' % ind
     im4name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
-rest_vs_motor_after_rot_right_%d_d.png' % ind
+rest_after_rot_right_%d_d.png' % ind
     im5name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
 timing_%d.png' % ind
 
@@ -38,5 +38,5 @@ timing_%d.png' % ind
     new_im.paste(im5, (0, im1.size[1]))
 
     im1name = '/big_disk/ajoshi/coding_ground/brainsync/src/\
-catimg_motor2rest_%d.png' % ind
+catimg_rest_%d.png' % ind
     new_im.save(im1name)
