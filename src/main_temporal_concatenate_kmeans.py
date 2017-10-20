@@ -57,12 +57,12 @@ nSub = sub_data1.shape[2]
 cat_data = sp.reshape(sub_data1, (sub_data1.shape[0],
                                   sub_data1.shape[1]*nSub), 'F')
 
-a = sp.load('data_bothsessions.npz')
-cat_data = a['cat_data']
-lst = a['lst']
-nClusters = a['nClusters']
+print cat_data.shape
 
-SC = KMeans(n_clusters=nClusters, random_state=5324, n_jobs=-1)
+del sub_data1, d1, temp, data1
+
+
+SC = KMeans(n_clusters=nClusters, random_state=5324)
 labs_cat = SC.fit_predict(cat_data)
 
 #sp.savez_compressed('labs_all_data_bothsessions_17_clusters', lab_sub=lab_sub, lst=lst, nClusters=nClusters)
