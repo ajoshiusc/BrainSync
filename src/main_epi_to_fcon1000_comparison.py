@@ -26,7 +26,7 @@ r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
 nClusters = 3
 
-ref = '100307'
+ref = '196750'
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
 dfs_right = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
@@ -88,7 +88,7 @@ diffafter = 0
 
 sub = lst[0]
 
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/\
+vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/brainsync/data/\
 NorthShoreLIJ/0019002/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
 data = vrest1['func_right']
 indx = sp.isnan(data)
@@ -143,8 +143,8 @@ for sub in lst:
     rho1 += sp.sum(vrest1*vrest2, axis=1)/vrest1.shape[1]
     diffbefore += vrest1 - vrest2
     
-    vrest2, Rot = rot_sub_data(ref=vrest1, sub=vrest2,
-                               area_weight=sp.sqrt(surf_weight[ind_rois]))
+    vrest2, Rot, _ = rot_sub_data(ref=vrest1, sub=vrest2,
+                                  area_weight=sp.sqrt(surf_weight[ind_rois]))
     
 
     rho1rot += sp.sum(vrest1*vrest2,

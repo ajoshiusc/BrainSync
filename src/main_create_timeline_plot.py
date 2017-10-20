@@ -12,7 +12,7 @@ import os
 import numpy as np
 from dfsio import readdfs
 from surfproc import view_patch_vtk, patch_color_attrib
-from fmri_methods_sipi import rot_sub_data
+#from fmri_methods_sipi import rot_sub_data
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 
@@ -75,3 +75,7 @@ for ind in sp.arange(284):
     tname = 'timing_%d.png' % ind
     plt.savefig(tname)
     plt.close()
+
+motor_timing = so
+sp.savez('timing.npz', motor_timing)
+

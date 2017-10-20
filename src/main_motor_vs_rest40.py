@@ -2,7 +2,7 @@
 import scipy.io
 import scipy as sp
 import numpy as np
-from fmri_methods_sipi import rot_sub_data
+#from fmri_methods_sipi import rot_sub_data
 from surfproc import view_patch_vtk, patch_color_attrib
 from dfsio import readdfs
 import os
@@ -47,7 +47,7 @@ rest = data[LR_flag, :]
 #temp = temp/s[:, None]
 #d1 = temp
 
-task = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.tfMRI_MOTOR_RL.reduce3.ftdata.NLM_11N_hvar_5.mat')
+task = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.tfMRI_MOTOR_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
 task = task['ftdata_NLM']
 temp = task[LR_flag, :] # rest[:, :task.shape[1]]
 
@@ -90,13 +90,15 @@ reduce3.ftdata.NLM_11N_hvar_25.mat'))
     print ind,
 
 plt.figure()
-plt.imshow(sp.absolute(dist_all_orig), aspect='auto', clim=(0, 2.0))
+plt.set_cmap('jet')
+plt.imshow(sp.absolute(dist_all_orig), aspect='auto', clim=(0, 0.1))
 plt.colorbar()
 plt.savefig('dist_before_task.pdf', dpi=300)
 plt.show()
 plt.figure()
 
-plt.imshow(sp.absolute(dist_all_rot/40), aspect='auto', clim=(0, 2.0))
+plt.set_cmap('jet')
+plt.imshow(sp.absolute(dist_all_rot/40), aspect='auto', clim=(0, 0.1))
 plt.colorbar()
 plt.savefig('dist_after_task.pdf', dpi=300)
 plt.show()

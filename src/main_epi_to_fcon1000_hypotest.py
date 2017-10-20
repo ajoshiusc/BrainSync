@@ -25,8 +25,8 @@ lst = os.listdir(p_dir)
 r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
 nClusters = 3
-hemi = 'left'
-ref = '100307'
+hemi = 'right'
+ref = '196750'
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
 dfs_hemi = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
@@ -80,7 +80,7 @@ diffafter = 0
 
 sub = lst[0]
 
-vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/epilepsy/data/\
+vrest1 = scipy.io.loadmat('/big_disk/ajoshi/coding_ground/brainsync/data/\
 Cleveland/subject1/fmri_tnlm_5_reduce3_v2.mat')  # h5py.File(fname1);
 
 
@@ -103,7 +103,7 @@ rho1rot = 0
 diffafter = 0
 diffbefore = 0
 
-a = sp.load('/big_disk/ajoshi/coding_ground/epilepsy/data/\
+a = sp.load('/big_disk/ajoshi/coding_ground/brainsync/data/\
 fcon1000_null_all_' + hemi + '.npz')
 rho_null = sp.mean(a['rho_null'], axis=0)
 
@@ -141,8 +141,8 @@ for sub in lst:
     rho1 += sp.sum(vrest1*vrest2, axis=1)/vrest1.shape[1]
     diffbefore += vrest1 - vrest2
 
-    vrest2, Rot = rot_sub_data(ref=vrest1, sub=vrest2,
-                               area_weight=sp.sqrt(surf_weight))
+    vrest2, Rot, _ = rot_sub_data(ref=vrest1, sub=vrest2,
+                                  area_weight=sp.sqrt(surf_weight))
     t = sp.sum(vrest1*vrest2, axis=1)/vrest1.shape[1]
 
     rho_all = sp.append(rho_all, t[:, None], axis=1)
@@ -188,7 +188,7 @@ for jj in range(rho_all1.shape[1]):
 
 pval1 = 1-pval.mean(axis=1)/rho_null.shape[1]
 a = multipletests(pvals=pval1, alpha=0.05, method='fdr_bh')
-dfs_hemi_sm.attributes = a[1]+1 # sp.amax((pval1, a[1]),axis=0)
+dfs_hemi_sm.attributes = pval1 #a[1]+1 # sp.amax((pval1, a[1]),axis=0)
 # sns.distplot(pval1)
 
 # from rpy2.robjects.packages import importr
