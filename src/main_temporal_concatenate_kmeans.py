@@ -63,6 +63,6 @@ del sub_data1, d1, temp, data1
 
 
 SC = KMeans(n_clusters=nClusters, random_state=5324)
-labs_cat = SC.fit_predict(cat_data)
+labs_cat = SC.fit_predict(cat_data[:,:48000])
 
 #sp.savez_compressed('labs_all_data_bothsessions_17_clusters', lab_sub=lab_sub, lst=lst, nClusters=nClusters)
