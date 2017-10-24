@@ -67,8 +67,8 @@ view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180,
                roll=90, outfile='corr_LR_right2.png', show=0)
 
 # Plot correlations in left hemisphere
-dfs_left_sm = patch_color_attrib(dfs_left_sm, avgCorrR, clim=[0, 1])
-view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=-180,
+dfs_left_sm = patch_color_attrib(dfs_left_sm, avgCorrL, clim=[0, 1])
+view_patch_vtk(dfs_left_sm, azimuth=-90, elevation=-180,
                roll=-90, outfile='corrLR_left1.png', show=0)
-view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180,
+view_patch_vtk(dfs_left_sm, azimuth=90, elevation=180,
                roll=90, outfile='corr_LR_left2.png', show=0)
