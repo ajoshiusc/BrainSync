@@ -49,16 +49,11 @@ reduce3.ftdata.NLM_11N_hvar_25.mat'))
     sub2L, _, _ = normalizeData(data[~LR_flag, :].T)
     sub2R, _, _ = normalizeData(data[LR_flag, :].T)
     _, R = brainSync(X=sub1L, Y=sub2L)
-    avgCorr += sp.mean(sub1R*sp.dot(R, sub2R), axis=1)
+    avgCorr += sp.mean(sub1R*sp.dot(R, sub2R), axis=0)
     count1 += 1
     print count1,
 
-nSub = sub1L.shape[2]
-
-avgCorr = sp.zeros(len(dfs_right_sm.vertices))
-
-for ind in range(nSub):
-    print ind,
+nSub = count1
 
 avgCorr = avgCorr/(nSub)
 
