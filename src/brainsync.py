@@ -33,11 +33,11 @@ may not work')
 def brainSync(X, Y):
     """
    Input:
-       X - Time series of the reference data (Time x Vertex)
+       X - Time series of the reference data (Time x Vertex) \n
        Y - Time series of the subject data (Time x Vertex)
 
    Output:
-       Y2 - Synced subject data with respect to reference data (Time x Vertex)
+       Y2 - Synced subject data (Time x Vertex)\n
        R - The orthogonal rotation matrix (Time x Time)
 
    Please cite the following publication:
