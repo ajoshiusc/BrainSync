@@ -12,7 +12,7 @@ p_dir_ref = '/big_disk/ajoshi/HCP_data'
 lst = os.listdir(p_dir)
 r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
-nClusters = 17
+nClusters = 100
 
 ref = '196750'  # chosen by taking smallest distance to every other subject
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
@@ -65,5 +65,5 @@ del sub_data1, d1, temp, data1
 SC = KMeans(n_clusters=nClusters, random_state=5324, verbose=1)
 labs_cat = SC.fit_predict(cat_data)
 
-sp.savez_compressed('labs_concat_data_17_clusters', labs_cat=labs_cat,
+sp.savez_compressed('labs_concat_data_100_clusters', labs_cat=labs_cat,
                     lst=lst, nClusters=nClusters)
