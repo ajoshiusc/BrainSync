@@ -5,6 +5,7 @@ Created on Thu Aug  4 05:39:43 2016
 @author: ajoshi
 """
 import os
+import glob
 from dfsio import readdfs, writedfs
 import scipy as sp
 from brainsync import brainSync, normalizeData
@@ -18,53 +19,54 @@ BFPPATH = '/home/ajoshi/coding_ground/bfp/supp_data'
 refLeft = readdfs(os.path.join(BFPPATH, 'bci32kleft.dfs'))
 refRight = readdfs(os.path.join(BFPPATH, 'bci32kright.dfs'))
 #
-nullsubDir = '/big_disk/ajoshi/Beijing_Zhang_bfp/'
-lst = os.listdir(nullsubDir)
-nsub = 40 #len(lst)
+nullsubDir = '/deneb_disk/Beijing_Zhang_bfp/'
+lst = glob.glob(nullsubDir+'*LB40.mat')
+nsub = 50#len(lst)
+vsub = sp.io.loadmat('/deneb_disk/from_Todd_Constable_Epilepsy_Processed\
+/sn7602/func/sn7602_rest_bold.32k.GOrd_LB40.mat')
+vsub, _, _ = normalizeData(vsub['dtseries'].T)
 
 print("There are %d subjects" % nsub)
 print("Reading the subject data")
 # %%
 for ind1 in range(nsub):
     vrest = sp.io.loadmat(os.path.join(nullsubDir, lst[ind1]))
-    vrest = vrest['dtseries']
+    vrest = vrest['dtseries'].T
     if ind1 == 0:
         vrest_subs = sp.zeros([vrest.shape[1], vrest.shape[0], nsub])
 
-    vrest_subs[:, :, ind1], _, _ = normalizeData(vrest.T)
+    vrest = vrest[:vsub.shape[0], :]
+    vrest_subs[:, :, ind1], _, _ = normalizeData(vrest)
 #    print(ind1, end=' ')
     print ind1,
 
 # %%
 #  Build Null Distribution
 nVert = vrest_subs.shape[1]
-rho_null = sp.zeros([nsub, nsub, nVert])
+rho_null = sp.zeros([nsub, nVert])
 for ind1 in range(nsub):
+    t = 0
     for ind2 in range(nsub):
+        if ind1 == ind2:
+            continue
         vrest1 = vrest_subs[:, :, ind1]
         vrest2 = vrest_subs[:, :, ind2]
-
         vrest2, Rot = brainSync(X=vrest1, Y=vrest2)
-        t = sp.sum(vrest1*vrest2, axis=0)
-#
-        rho_null[ind1, ind2, :] = t
-#        print('rho(%d,%d)=%g' % (ind1, ind2, sp.mean(t)), end=' ')
-        print 'rho(%d,%d)=%g' % (ind1, ind2, sp.mean(t))
+        t += sp.sum(vrest1*vrest2, axis=0)
 
-sp.savez('fcon1000_null40.npz', rho_null=rho_null)
+    rho_null[ind1, :] = t/(nsub-1)
+    print 'rho(%d)=%g' % (ind1, sp.mean(t))
+
+sp.savez('fcon1000_null_nsub50.npz', rho_null=rho_null, vrest_subs=vrest_subs)
 
 
 # %%
 # Read Candidate Subject to be tested against normals
 
-vsub = sp.io.loadmat('/deneb_disk/from_Todd_Constable_Epilepsy_Processed\
-/sn7602/func/sn7602_rest_bold.32k.GOrd.mat')
-vsub, _, _ = normalizeData(vsub['dtseries'].T)
 
 rho_sub = sp.zeros([nsub, nVert])
 for ind1 in range(nsub):
     vrest = vrest_subs[:, :, ind1]
-    vrest = vrest[:vsub.shape[0], :]
     vrest, _, _ = normalizeData(vrest)
     vrest, Rot = brainSync(X=vsub, Y=vrest)
     t = sp.sum(vrest*vsub, axis=0)
