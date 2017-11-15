@@ -22,8 +22,10 @@ refRight = readdfs(os.path.join(BFPPATH, 'bci32kright.dfs'))
 nullsubDir = '/deneb_disk/Beijing_Zhang_bfp/'
 lst = glob.glob(nullsubDir+'*LB40.mat')
 nsub = 50#len(lst)
+#ids={'sn8133','sn4055','tr4277','sn7915','sn5895','sn7602','sn6012','tr3170','sn6594','sn7256','sub05267','sub06880'};
+
 vsub = sp.io.loadmat('/deneb_disk/from_Todd_Constable_Epilepsy_Processed\
-/sn7602/func/sn7602_rest_bold.32k.GOrd_LB40.mat')
+/sn7915/func/sn7915_rest_bold.32k.GOrd_LB40.mat')
 vsub, _, _ = normalizeData(vsub['dtseries'].T)
 
 print("There are %d subjects" % nsub)
@@ -33,7 +35,7 @@ for ind1 in range(nsub):
     vrest = sp.io.loadmat(os.path.join(nullsubDir, lst[ind1]))
     vrest = vrest['dtseries'].T
     if ind1 == 0:
-        vrest_subs = sp.zeros([vrest.shape[1], vrest.shape[0], nsub])
+        vrest_subs = sp.zeros([vsub.shape[0], vrest.shape[1], nsub])
 
     vrest = vrest[:vsub.shape[0], :]
     vrest_subs[:, :, ind1], _, _ = normalizeData(vrest)
@@ -79,9 +81,8 @@ for ind1 in range(nsub):
 # %%
 # Hypothesis test
 
-rho_null1 = sp.mean(rho_null, axis=1)
 rho_sub1 = sp.mean(rho_sub, axis=0)
-pval = sp.mean(rho_sub1 > rho_null1, axis=0)
+pval = sp.mean(rho_sub1 > rho_null, axis=0)
 r, corrPval,_,_ = multipletests(pvals=pval, alpha=0.05, method='fdr_bh')
 
 
@@ -93,8 +94,8 @@ sr = readdfs(os.path.join(BFPPATH, 'bci32kright.dfs'))
 sr.attributes = corrPval[sl.vertices.shape[0]:2*sl.vertices.shape[0]]
 sr = patch_color_attrib(sr, clim=[0, 1])
 
-writedfs('right_pval_sn7602.dfs',sr);
-writedfs('left_pval_sn7602.dfs',sl);
+writedfs('right_pval_sn7915.dfs',sr);
+writedfs('left_pval_sn7915.dfs',sl);
 
 view_patch_vtk(sl, azimuth=90, elevation=180, roll=90, show=1)
 view_patch_vtk(sl, azimuth=-90, elevation=180, roll=-90, show=1)
