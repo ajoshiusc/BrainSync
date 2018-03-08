@@ -448,7 +448,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.tri as mtri
 import matplotlib.pyplot as plt
 from matplotlib.colors import LightSource
-from vispy import scene
+''' from vispy import scene
 from vispy.color import Color
 from vispy import gloo
 from vispy.scene.cameras import TurntableCamera
@@ -470,7 +470,7 @@ def view_patch_vispy(r, attrib=[], opacity=1, fig=0, show=1, colorbar=1, clim=[0
     axis = scene.visuals.XYZAxis(parent=view.scene)
     if __name__ == '__main__' and sys.flags.interactive == 0:
         canvas.app.run()
-
+ '''
 
 def view_patch_mplt(r, attrib=[], opacity=1, fig=0, show=1, colorbar=1, clim=[0], outfile=0, azimuth=0, elevation=-90, colormap='jet'):
     fig = plt.figure()
