@@ -4,7 +4,7 @@ Created on Thu Aug  4 05:39:43 2016
 
 @author: ajoshi
 """
-import scipy.io
+import scipy.io as spio
 import scipy as sp
 import os
 import numpy as np
@@ -18,45 +18,48 @@ from brainsync import brainSync, normalizeData
 from scipy.ndimage.filters import gaussian_filter
 
 p_dir = '/big_disk/ajoshi/HCP_data'
-p_dir_ref='/big_disk/ajoshi/HCP_data/'
+p_dir_ref = '/big_disk/ajoshi/HCP_data/'
 lst = os.listdir(p_dir)
 r_factor = 3
 ref_dir = os.path.join(p_dir_ref, 'reference')
 nClusters = 3
 
-ref = '196750'#'100307'
+ref = '196750'  # '100307'
 print(ref + '.reduce' + str(r_factor) + '.LR_mask.mat')
 fn1 = ref + '.reduce' + str(r_factor) + '.LR_mask.mat'
 fname1 = os.path.join(ref_dir, fn1)
-msk = scipy.io.loadmat(fname1)  # h5py.File(fname1);
+
+msk = spio.loadmat(fname1)  # h5py.File(fname1);
+
 dfs_right = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 .a2009s.32k_fs.reduce3.right.dfs'))
+
 dfs_right_sm = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 .a2009s.32k_fs.reduce3.very_smooth.right.dfs'))
 
 sub = lst[0]
 
-#dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
-#tfMRI_MOTOR_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
+# dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
+# tfMRI_MOTOR_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
 #fmotor = dat['ftdata_NLM'].T
-#fmotor,_,_=normalizeData(fmotor)
+# fmotor,_,_=normalizeData(fmotor)
 
-dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
+dat = spio.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
 rfMRI_REST1_RL.reduce3.ftdata.NLM_11N_hvar_5.mat')
 fmotor = dat['ftdata_NLM'].T
 fmotor = fmotor[:284, :]
-fmotor,_,_=normalizeData(fmotor)
+fmotor, _, _ = normalizeData(fmotor)
 
 
-dat = scipy.io.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
+dat = spio.loadmat('/big_disk/ajoshi/with_andrew/100307/100307.\
 rfMRI_REST1_LR.reduce3.ftdata.NLM_11N_hvar_5.mat')
 frest = dat['ftdata_NLM'].T
-frest=frest[:fmotor.shape[0],:]
-frest,_,_=normalizeData(frest)
+frest = frest[:fmotor.shape[0], :]
+frest, _, _ = normalizeData(frest)
 
 diffbefore = fmotor - frest
 
-fmotor,_=brainSync(frest,fmotor)
+fmotor, _ = brainSync(frest, fmotor)
 
 diffafter = fmotor - frest
 
@@ -70,7 +73,7 @@ plt.imshow(sp.absolute(diffafter), aspect='auto', clim=(0, .1))
 plt.colorbar()
 plt.savefig('dist_motor_after.pdf', dpi=300)
 plt.show()
-diffafter = gaussian_filter(diffafter, [2, 0])
+#diffafter = gaussian_filter(diffafter, [2, 0])
 nV = len(dfs_right_sm.vertices)
 for ind in sp.arange(frest.shape[0]):
     dfs_right_sm.attributes = sp.absolute(diffafter[ind, (nV):])
