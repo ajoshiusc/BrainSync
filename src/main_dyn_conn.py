@@ -17,19 +17,17 @@ NCMP = 21
 surfObj = readdfs(join(BFPPATH, 'supp_data', 'bci32kleft.dfs'))
 numVert = len(surfObj.vertices)
 
-sub1n = '/deneb_disk/HCP/100307/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii'
-sub1n_tsk = '/deneb_disk/HCP/100307/MNINonLinear/Results/tfMRI_MOTOR_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii'
+sub1n = '/deneb_disk/HCP/196750/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii'
+sub1n_tsk = '/deneb_disk/HCP/196750/MNINonLinear/Results/tfMRI_MOTOR_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii'
 
 #sub1 = nilearn.image.load_img(sub1n)
 sub1 = nib.cifti2.cifti2.load(sub1n)
 X = sub1.get_data().T
-Xorig = np.array(X)
 X, _, _ = normalizeData(X.T)
 
 
 sub1tsk = nib.cifti2.cifti2.load(sub1n_tsk)
 Xtsk = sub1tsk.get_data().T
-Xorig = np.array(X)
 Xtsk, _, _ = normalizeData(Xtsk.T)
 
 # %% Explained variance
@@ -44,23 +42,9 @@ D = p.fit_transform(X.T)
 
 print("Explained Variance Fraction = %f" % p.explained_variance_ratio_.sum())
 
-# D is the exeplar data 
+# D is the exeplar data
 D, _, _ = normalizeData(D.T)
 
-'''
-D1 = D[:, :100]
-X1 = X[:, :100]
-p1=plt.figure()
-plt.imshow(np.dot((D1.T), D1), aspect='auto', clim=(0, 1))
-plt.title('estim')
-
-
-p2=plt.figure()
-plt.imshow(np.dot((X1.T), X1), aspect='auto', clim=(0, 1))
-plt.title('orig')
-# D is the representative data that produces the network
-#DR = p.fit_transform(XR.T)
-'''
 nT = Xtsk.shape[0]
 
 Xnew = np.zeros(Xtsk.shape)
@@ -75,6 +59,10 @@ for i in range(Xtsk.shape[0]-NCMP):
 
 a = nib.cifti2.Cifti2Image(Xnew, sub1.header, file_map=sub1.file_map)
 a.to_filename('outfile_task.nii')
+
+a = nib.cifti2.Cifti2Image(X-Xnew, sub1.header, file_map=sub1.file_map)
+a.to_filename('outfile_diff.nii')
+
 
 '''
 % 

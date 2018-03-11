@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 """
 Created on Tue Jul 11 22:42:56 2017
 
@@ -48,8 +49,8 @@ def brainSync(X, Y):
         print('The input is possibly transposed. Please check to make sure \
 that the input is time x vertices!')
 
-    C = sp.dot(X, Y.T)
-    U, _, V = sp.linalg.svd(C)
-    R = sp.dot(U, V)
-    Y2 = sp.dot(R, Y)
+    C = np.dot(X, Y.T)
+    U, _, V = np.linalg.svd(C)
+    R = np.dot(U, V)
+    Y2 = np.dot(R, Y)
     return Y2, R
