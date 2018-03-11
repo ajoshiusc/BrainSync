@@ -2,24 +2,25 @@
 # Shree Ganeshaya Namaha
 from dfsio import readdfs
 from os.path import join
-import nilearn.image
+#import nilearn.image
 import numpy as np
 from brainsync import normalizeData, brainSync
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
-
+import nibabel as nib
 
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
 
-NCMP = 31
+NCMP = 21
 
 surfObj = readdfs(join(BFPPATH, 'supp_data', 'bci32kleft.dfs'))
 numVert = len(surfObj.vertices)
 
-sub1 = '/big_disk/ajoshi/HCP100/HCP100/135932/MNINonLinear/Results/rfMRI_REST1\
+sub1n = '/big_disk/ajoshi/HCP100/HCP100/135932/MNINonLinear/Results/rfMRI_REST1\
 _LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii'
-sub1 = nilearn.image.load_img(sub1)
+#sub1 = nilearn.image.load_img(sub1n)
+sub1 = nib.cifti2.cifti2.load(sub1n)
 X = sub1.get_data().T
 Xorig = np.array(X)
 X, _, _ = normalizeData(X.T)
@@ -56,14 +57,17 @@ plt.title('orig')
 nT = X.shape[0]
 
 Xnew = np.zeros(X.shape)
-Cind = np.ind((NCMP-1)/2+1)
+Cind = np.int((NCMP-1)/2+1)
 for i in range(X.shape[0]-NCMP):
     xin = X[i:i+NCMP, :]
     xin, _, nrm = normalizeData(xin)
     dd, _ = brainSync(xin, D)
     dd = dd*nrm
-    Xnew[Cind, :] = dd[Cind, :]
-    print('%d/%d\n' % i, X.shape[0])
+    Xnew[Cind+i, :] = dd[Cind, :]
+    print("%d" % i, end=',')
+
+a = nib.cifti2.Cifti2Image(Xnew, sub1.header, file_map=sub1.file_map)
+a.to_filename('outfile.nii')
 
 '''
 % 
