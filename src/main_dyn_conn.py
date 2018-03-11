@@ -8,6 +8,8 @@ from brainsync import normalizeData, brainSync
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import nibabel as nib
+import os
+from surfproc import view_patch_vtk, patch_color_attrib
 
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
@@ -60,23 +62,30 @@ for i in range(Xtsk.shape[0]-NCMP):
 a = nib.cifti2.Cifti2Image(Xnew, sub1.header, file_map=sub1.file_map)
 a.to_filename('outfile_task.nii')
 
-a = nib.cifti2.Cifti2Image(X-Xnew, sub1.header, file_map=sub1.file_map)
+a = nib.cifti2.Cifti2Image(Xtsk-Xnew, sub1.header, file_map=sub1.file_map)
 a.to_filename('outfile_diff.nii')
 
 
-'''
-% 
-% %Xnew2=Xnew;
-% %Xnew2(1:NCMP,:)=Xnew(1:NCMP,:)./(1:NCMP)';
-% 
-% %Xnew2(NCMP+1:end,:)=Xnew2(NCMP+1:end,:)/NCMP;
-% c=sum(Xnew2.*X,1);
-% cc=zeros(size(surfObj.vertices,1),1);
-% cc(ind)=c;
-% s=smooth_cortex_fast(surfObj,.1,600);
-% 
-% figure;
-% patch('faces',surfObj.faces,'vertices',s.vertices,'facevertexcdata',cc,'edgecolor','none','facecolor','interp');
-% axis equal;view(-90,0);camlight;material dull; axis off;caxis([0,1]);colormap jet;
-% 
- '''
+#%%
+fname1 = 'left_motor1.png'
+fname2 = 'left_motor2.png'
+
+p_dir_ref = '/big_disk/ajoshi/HCP_data/'
+ref = '196750'  # '100307'
+
+Xtsk, _, _ = normalizeData(Xtsk)
+Xnew, _, _ = normalizeData(Xnew)
+
+
+lsurf = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+.a2009s.32k_fs.very_smooth.left.dfs'))
+lind = np.where(lsurf.labels > 0)[0]
+lsurf.attributes = np.zeros((lsurf.vertices.shape[0]))
+lsurf.attributes[lind] = np.linalg.norm(Xtsk[50:150, :len(lind)]-Xnew[50:150, :len(lind)], axis=0)
+lsurf = patch_color_attrib(lsurf, clim=[.45, 1.0])
+view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+               outfile=fname1, show=0)
+view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
+               outfile=fname2, show=0)
+
+
