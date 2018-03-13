@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Thu Aug  4 05:39:43 2016
 
@@ -75,6 +74,16 @@ plt.savefig('dist_motor_after.pdf', dpi=300)
 plt.show()
 #diffafter = gaussian_filter(diffafter, [2, 0])
 nV = len(dfs_right_sm.vertices)
+dfs_right_sm.attributes = np.sum(frest*fmotor,axis=0)
+dfs_right_sm.attributes=dfs_right_sm.attributes[nV:]
+fname1 = 'rest_after_1.png'
+fname2 = 'rest_after_2.png'
+dfs_right_sm = patch_color_attrib(dfs_right_sm, clim=[0.8, 1])
+view_patch_vtk(dfs_right_sm, azimuth=90, elevation=180, roll=90,
+               outfile=fname1, show=0)
+view_patch_vtk(dfs_right_sm, azimuth=-90, elevation=180, roll=-90,
+               outfile=fname2, show=0)
+
 for ind in sp.arange(frest.shape[0]):
     dfs_right_sm.attributes = sp.absolute(diffafter[ind, (nV):])
     fname1 = 'rest_after_rot_right_%d_d.png' % ind
