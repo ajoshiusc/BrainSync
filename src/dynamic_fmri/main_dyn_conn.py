@@ -11,12 +11,14 @@ import nibabel as nib
 import os
 from surfproc import view_patch_vtk, patch_color_attrib, smooth_surf_function
 import scipy.io as spio
+import scipy as sp
+
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
 
-NCMP = 51
+NCMP = 21
 
-surfObj = readdfs(join(BFPPATH, 'supp_data', 'bci32kleft.dfs'))
+surfObj = readdfs(join(BFPPATH, 'supp_data', 'bci32kright.dfs'))
 numVert = len(surfObj.vertices)
 
 #sub1n='/big_disk/ajoshi/HCP100/HCP100/135932/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii';
@@ -74,8 +76,8 @@ for i in range(Xtsk.shape[0]-NCMP):
 
 #loading cifti files has indices garbled
 #%%
-fname1 = 'left_motor1.png'
-fname2 = 'left_motor2.png'
+fname1 = 'right_motor1.png'
+fname2 = 'right_motor2.png'
 
 p_dir_ref = '/big_disk/ajoshi/HCP_data/'
 ref = '196750'  # '100307'
@@ -85,18 +87,36 @@ Xnew, _, _ = normalizeData(Xnew)
 
 lsurf = surfObj 
 ls = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
-.a2009s.32k_fs.very_smooth.left.dfs'))
+.a2009s.32k_fs.very_smooth.right.dfs'))
 lsurf=ls;
 #lind = np.where(ls.labels > -10)[0]
 lsurf.attributes = np.zeros((lsurf.vertices.shape[0]))
 #lsurf.attributes = X[150,:lsurf.vertices.shape[0]] # 
-lsurf.attributes = np.sum(Xtsk*Xnew, axis=0)
-lsurf.attributes = lsurf.attributes[:lsurf.vertices.shape[0]]
+
+nVert = lsurf.vertices.shape[0]
+diffafter = Xtsk-Xnew
+
+lsurf.attributes = np.sum((diffafter)**2, axis=0)
+lsurf.attributes = lsurf.attributes[nVert:]
 lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes)#, a1=1.1, a2=1.1)
-lsurf = patch_color_attrib(lsurf, clim=[0, .3])
+lsurf = patch_color_attrib(lsurf, clim=[1, 2])
 view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
                outfile=fname1, show=0)
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile=fname2, show=0)
+
+
+#%%
+for ind in sp.arange(Xtsk.shape[0]):
+    lsurf.attributes = diffafter[ind, nVert:]
+    fname1 = 'rest_after_rot_right_%d_d.png' % ind
+    fname2 = 'rest_after_rot_right_%d_m.png' % ind
+    lsurf = patch_color_attrib(lsurf, clim=[1, 2])
+    view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+                   outfile=fname1, show=0)
+    view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
+                   outfile=fname2, show=0)
+    print(ind,)
+#
 
 
