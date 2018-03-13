@@ -9,28 +9,35 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import nibabel as nib
 import os
-from surfproc import view_patch_vtk, patch_color_attrib
-
+from surfproc import view_patch_vtk, patch_color_attrib, smooth_surf_function
+import scipy.io as spio
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
 
-NCMP = 21
+NCMP = 51
 
 surfObj = readdfs(join(BFPPATH, 'supp_data', 'bci32kleft.dfs'))
 numVert = len(surfObj.vertices)
 
-sub1n = '/deneb_disk/HCP/196750/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii'
-sub1n_tsk = '/deneb_disk/HCP/196750/MNINonLinear/Results/tfMRI_MOTOR_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii'
-
-#sub1 = nilearn.image.load_img(sub1n)
-sub1 = nib.cifti2.cifti2.load(sub1n)
-X = sub1.get_data().T
+#sub1n='/big_disk/ajoshi/HCP100/HCP100/135932/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii';
+sub1n='/big_disk/ajoshi/with_andrew/100307/100307.rfMRI_REST1_LR.ftdata.mat'
+sub1n_tsk='/big_disk/ajoshi/with_andrew/100307/100307.tfMRI_MOTOR_LR.ftdata.mat'
+#sub1n = '/deneb_disk/HCP/196750/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii'
+#sub1n_tsk = '/deneb_disk/HCP/196750/MNINonLinear/Results/tfMRI_MOTOR_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii'
+X = spio.loadmat(sub1n)
+X = X['ftdata']
 X, _, _ = normalizeData(X.T)
 
+#sub1 = nilearn.image.load_img(sub1n)
+#sub1 = nib.load(sub1n)
+#X = sub1.get_data().T
 
-sub1tsk = nib.cifti2.cifti2.load(sub1n_tsk)
-Xtsk = sub1tsk.get_data().T
+Xtsk = spio.loadmat(sub1n_tsk)
+Xtsk = Xtsk['ftdata']
 Xtsk, _, _ = normalizeData(Xtsk.T)
+
+#sub1tsk = nib.cifti2.cifti2.load(sub1n_tsk)
+
 
 # %% Explained variance
 _, s, _ = np.linalg.svd(np.dot(X, X.T))
@@ -59,13 +66,13 @@ for i in range(Xtsk.shape[0]-NCMP):
     Xnew[Cind+i, :] = dd[Cind, :]
     print("%d" % i, end=',')
 
-a = nib.cifti2.Cifti2Image(Xnew, sub1.header, file_map=sub1.file_map)
-a.to_filename('outfile_task.nii')
+#a = nib.cifti2.Cifti2Image(Xnew, sub1.header, file_map=sub1.file_map)
+#a.to_filename('outfile_task.nii')
+#
+#a = nib.cifti2.Cifti2Image(Xtsk-Xnew, sub1.header, file_map=sub1.file_map)
+#a.to_filename('outfile_diff.nii')
 
-a = nib.cifti2.Cifti2Image(Xtsk-Xnew, sub1.header, file_map=sub1.file_map)
-a.to_filename('outfile_diff.nii')
-
-
+#loading cifti files has indices garbled
 #%%
 fname1 = 'left_motor1.png'
 fname2 = 'left_motor2.png'
@@ -76,13 +83,17 @@ ref = '196750'  # '100307'
 Xtsk, _, _ = normalizeData(Xtsk)
 Xnew, _, _ = normalizeData(Xnew)
 
-
-lsurf = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+lsurf = surfObj 
+ls = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
 .a2009s.32k_fs.very_smooth.left.dfs'))
-lind = np.where(lsurf.labels > 0)[0]
+lsurf=ls;
+#lind = np.where(ls.labels > -10)[0]
 lsurf.attributes = np.zeros((lsurf.vertices.shape[0]))
-lsurf.attributes[lind] = np.linalg.norm(Xtsk[50:150, :len(lind)]-Xnew[50:150, :len(lind)], axis=0)
-lsurf = patch_color_attrib(lsurf, clim=[.45, 1.0])
+#lsurf.attributes = X[150,:lsurf.vertices.shape[0]] # 
+lsurf.attributes = np.sum(Xtsk*Xnew, axis=0)
+lsurf.attributes = lsurf.attributes[:lsurf.vertices.shape[0]]
+lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes)#, a1=1.1, a2=1.1)
+lsurf = patch_color_attrib(lsurf, clim=[0, .3])
 view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
                outfile=fname1, show=0)
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
