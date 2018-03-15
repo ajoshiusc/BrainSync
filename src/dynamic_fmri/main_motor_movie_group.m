@@ -25,7 +25,7 @@ numVert=32492;
 %load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
 zsum=0;
 nsub=0;
-for cind=7;%7%19 %1:length(f)
+for cind=3;%7%19 %1:length(f)
     if ~strcmp(f{cind}(end-2:end),'_s4')
         continue;
     end
@@ -62,11 +62,11 @@ zscr=[zl;zr];
 
 %% Show the average z scores
 figure;
-patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0*(zl>6),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0*(zl>5),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;
 
 figure;
-patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0*(zr>6),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0*(zr>5),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
 camlight; axis equal; axis off;material dull; 
 
 
@@ -120,7 +120,8 @@ ravg=rsum/nsub;
 ravg=normalizeData(ravg);
 save('ravg.mat','ravg');
 
-%% Compute the dynamics
+%% Compute the dynamics from resting data  
+%% Alternatively, template can be built using task data, which is slightly worse
 NCMP=21;
 [~,D]=pca(ravg');
 D=D(:,1:NCMP);
@@ -143,7 +144,6 @@ save('tskFitted.mat','tskFitted');
 
 %% Compute and Plot difference
 
-
 diffafter=tavg-tskFitted;
 
 diffrt=sqrt(sum(diffafter.^2,1));
@@ -156,7 +156,6 @@ figure;
 patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',diffrt((1+length(rsurf.vertices)):2*length(rsurf.vertices))','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;
 
-
 tarea=find((zavg>6));
 
 diffafter(:,tarea);
@@ -165,6 +164,6 @@ figure;
 plot(smooth(smooth(smooth(task_t))));
 
 figure;
-plot(smooth(((task_t))));
+plot(smooth(smooth((task_t))));
 
 %%
