@@ -25,7 +25,7 @@ numVert=32492;
 %load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
 zsum=0;
 nsub=0;
-for cind=3;%7%19 %1:length(f)
+for cind=6;%7%19 %1:length(f)
     if ~strcmp(f{cind}(end-2:end),'_s4')
         continue;
     end
@@ -48,9 +48,9 @@ zavg=(zsum/nsub);
 save('avg_zscore.mat','zavg');
 %% 
 nVertHiRes=32492;
-p_dir_ref = '/big_disk/ajoshi/HCP_data/'
-ref = '196750' 
-load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
+p_dir_ref = '/big_disk/ajoshi/HCP_data/';
+ref = '196750'; 
+load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat');
 
 lsurf = readdfs(fullfile(p_dir_ref,'reference',[ref,'.aparc.a2009s.32k_fs.very_smooth.left.dfs']));
 rsurf = readdfs(fullfile(p_dir_ref,'reference',[ref,'.aparc.a2009s.32k_fs.very_smooth.right.dfs']));
