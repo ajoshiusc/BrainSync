@@ -25,7 +25,7 @@ numVert=32492;
 %load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
 zsum=0;
 nsub=0;
-for cind=4;%7%19 %1:length(f)
+for cind=7;%7%19 %1:length(f)
     if ~strcmp(f{cind}(end-2:end),'_s4')
         continue;
     end
@@ -45,7 +45,7 @@ for cind=4;%7%19 %1:length(f)
 end
     
 zavg=(zsum/nsub);
-
+save('avg_zscore.mat','zavg');
 %% 
 nVertHiRes=32492;
 p_dir_ref = '/big_disk/ajoshi/HCP_data/'
@@ -62,11 +62,11 @@ zscr=[zl;zr];
 
 %% Show the average z scores
 figure;
-patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',zl,'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0*(zl>6),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;
 
 figure;
-patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',zr,'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0*(zr>6),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
 camlight; axis equal; axis off;material dull; 
 
 
@@ -74,7 +74,7 @@ camlight; axis equal; axis off;material dull;
 %% Compute BrainSync Averaged task fmri
 ref = '196750'; 
 rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/tfMRI_%s_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii',ref,task);
-refdata=ft_read_cifti(subtdata);
+refdata=ft_read_cifti(rfname);
 refdata=normalizeData(refdata.dtseries');
 tsum=0;nsub=0;
 for subid=1:length(l)
@@ -93,10 +93,12 @@ for subid=1:length(l)
         nsub=nsub+1
 end
 tavg=tsum/nsub;
+tavg=normalizeData(tavg);
+save('tskavg.mat','tavg');
 %% Compute BrainSync Averaged rfmri
 ref = '196750'; 
-rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',ref,task);
-refdata=ft_read_cifti(subtdata);
+rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',ref);
+refdata=ft_read_cifti(rfname);
 refdata=normalizeData(refdata.dtseries');
 rsum=0;nsub=0;
 for subid=1:length(l)
@@ -115,6 +117,8 @@ for subid=1:length(l)
         nsub=nsub+1
 end
 ravg=rsum/nsub;
+ravg=normalizeData(ravg);
+save('ravg.mat','ravg');
 
 %% Compute the dynamics
 NCMP=21;
@@ -135,11 +139,14 @@ for i = 1:size(tavg,1)-NCMP
     fprintf('%d,',i);
 end
 [tskFitted,~, ~] = normalizeData(tskFitted);
+save('tskFitted.mat','tskFitted');
 
 %% Compute and Plot difference
+
+
 diffafter=tavg-tskFitted;
 
-diffrt=sum(diffafter.^2,1);
+diffrt=sqrt(sum(diffafter.^2,1));
 
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',diffrt(1:length(lsurf.vertices))','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
@@ -150,10 +157,14 @@ patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',diffrt((1+
 camlight; axis equal; axis off;material dull;
 
 
-tarea=find((zscr>5));
+tarea=find((zavg>6));
 
-diffafter(:,tarea)
-tongue_t=sqrt(sum(diffafter(:,tarea).^2,2));
+diffafter(:,tarea);
+task_t=sqrt(sum(diffafter(:,tarea).^2,2));
 figure;
-plot(smooth(smooth(tongue_t)));
+plot(smooth(smooth(smooth(task_t))));
 
+figure;
+plot(smooth(((task_t))));
+
+%%
