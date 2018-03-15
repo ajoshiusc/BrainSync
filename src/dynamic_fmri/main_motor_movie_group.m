@@ -99,7 +99,7 @@ save('tskFitted.mat','tskFitted');
 %%
 zsum=0;
 nsub=0;
-for cind=6;%7%19 %1:length(f)
+for cind=7;%7%19 %1:length(f)
     if ~strcmp(f{cind}(end-2:end),'_s4')
         continue;
     end
