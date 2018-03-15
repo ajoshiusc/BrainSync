@@ -22,7 +22,7 @@ imprv=[];
 f=fieldnames(sub1);
 avg_t1=cell(length(f),1);avg_t2=cell(length(f),1);avg_t2w=cell(length(f),1);
 numVert=32492;
-load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
+%load('/big_disk/ajoshi/with_andrew/reference/100307.reduce3.operators.mat')
 zsum=0;
 nsub=0;
 for cind=4;%7%19 %1:length(f)
@@ -71,17 +71,82 @@ camlight; axis equal; axis off;material dull;
 
 
 
+%% Compute BrainSync Averaged task fmri
+ref = '196750'; 
+rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/tfMRI_%s_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii',ref,task);
+refdata=ft_read_cifti(subtdata);
+refdata=normalizeData(refdata.dtseries');
+tsum=0;nsub=0;
+for subid=1:length(l)
+        subname=l(subid).name;        
+        subtdata = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/tfMRI_%s_LR/tfMRI_MOTOR_LR_Atlas.dtseries.nii',subname,task);
+        
+        if ~isfile(subtdata)
+            continue;
+        end
+        sub=ft_read_cifti(subtdata);
+        tdata = sub.dtseries;
+        tdata = normalizeData(tdata');
+        tdata = brainSync(refdata,tdata);
+        tsum = tsum+tdata;
+        
+        nsub=nsub+1
+end
+tavg=tsum/nsub;
+%% Compute BrainSync Averaged rfmri
+ref = '196750'; 
+rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',ref,task);
+refdata=ft_read_cifti(subtdata);
+refdata=normalizeData(refdata.dtseries');
+rsum=0;nsub=0;
+for subid=1:length(l)
+        subname=l(subid).name;        
+        subtdata = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',subname);
+        
+        if ~isfile(subtdata)
+            continue;
+        end
+        sub=ft_read_cifti(subtdata);
+        rdata = sub.dtseries;
+        rdata = normalizeData(rdata');
+        rdata = brainSync(refdata,rdata);
+        rsum = rsum+rdata;
+        
+        nsub=nsub+1
+end
+ravg=rsum/nsub;
 
+%% Compute the dynamics
+NCMP=21;
+[~,D]=pca(ravg');
+D=D(:,1:NCMP);
+D=normalizeData(D');
 
+%% Compute Dynamics of task data
 
-%% 
+tskFitted = zeros(size(tavg));
+Cind = (NCMP-1)/2+1;
+for i = 1:size(tavg,1)-NCMP
+    xin = tavg(i:i+NCMP-1, :);
+    [xin, ~, nrm] = normalizeData(xin);
+    dd = brainSync(xin, D);
+    dd = dd.*nrm;
+    tskFitted(Cind+i-1, :) = dd(Cind, :);
+    fprintf('%d,',i);
+end
+[tskFitted,~, ~] = normalizeData(tskFitted);
+
+%% Compute and Plot difference
+diffafter=tavg-tskFitted;
+
 diffrt=sum(diffafter.^2,1);
+
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',diffrt(1:length(lsurf.vertices))','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;
 
 figure;
-patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',diffrt(1+length(rsurf.vertices):end)','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',diffrt((1+length(rsurf.vertices)):2*length(rsurf.vertices))','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;
 
 
