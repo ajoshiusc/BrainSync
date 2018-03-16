@@ -159,12 +159,28 @@ camlight; axis equal; axis off;material dull;
 
 tarea=find((zavg>5));
 
-diffafter(:,tarea);
-task_t=sqrt(sum(diffafter(:,tarea).^2,2));
-figure;
-plot(smooth(smooth(smooth(task_t))));
+save('tavg.mat','tavg');
+
+% diffafter(:,tarea);
+% task_t=sqrt(sum(diffafter(:,tarea).^2,2));
+% figure;
+% plot(smooth(smooth(smooth(task_t))));
+% 
+% figure;
+% plot(smooth(smooth((task_t))));
+% 
+dtseries=zeros(size(diffafter));
+for jj=1:size(dtseries,2)
+    dtseries(:,jj)=smooth(smooth(diffafter(:,jj)));
+end
+save('diffafter.mat','dtseries');
+
+task_t=sqrt(sum(dtseries(:,tarea).^2,2));
+% figure;
+% plot(smooth(smooth(smooth(task_t))));
 
 figure;
-plot(smooth(smooth((task_t))));
+plot((task_t));
+
 
 %%
