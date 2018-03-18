@@ -48,7 +48,7 @@ for subid=1:length(l)
 end
 tavg=tsum/nsub;
 tavg=normalizeData(tavg);
-save('tskavg.mat','tavg');
+save('tavg.mat','tavg');
 %% Compute BrainSync Averaged rfmri
 ref = '196750'; 
 rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',ref);
@@ -93,7 +93,7 @@ for i = 1:size(tavg,1)-NCMP
     tskFitted(Cind+i-1, :) = dd(Cind, :);
     fprintf('%d,',i);
 end
-[tskFitted,~, ~] = normalizeData(tskFitted);
+%[tskFitted,~, ~] = normalizeData(tskFitted);
 save('tskFitted.mat','tskFitted');
 
 %%
@@ -158,8 +158,9 @@ patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',diffrt((1+
 camlight; axis equal; axis off;material dull;
 
 tarea=find((zavg>5));
-
+dtseries=diffafter;
 save('tavg.mat','tavg');
+save('diffafter.mat','dtseries');
 
 % diffafter(:,tarea);
 % task_t=sqrt(sum(diffafter(:,tarea).^2,2));
@@ -173,7 +174,6 @@ dtseries=zeros(size(diffafter));
 for jj=1:size(dtseries,2)
     dtseries(:,jj)=smooth(smooth(diffafter(:,jj)));
 end
-save('diffafter.mat','dtseries');
 
 task_t=sqrt(sum(dtseries(:,tarea).^2,2));
 % figure;
