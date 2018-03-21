@@ -71,6 +71,8 @@ for subid=1:length(l)
         nsub=nsub+1
 end
 ravg=rsum/nsub;
+save('ravg_nonorm.mat','ravg');
+
 ravg=normalizeData(ravg);
 save('ravg.mat','ravg');
 
