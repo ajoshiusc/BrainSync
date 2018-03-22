@@ -43,8 +43,11 @@ t1=tavg-tskFitted;
 
 nT=size(tavg,1);
 for t=1:nT
+%     parfor jj=1:size(tavg,2)
+%         pval(t,jj)=sum(r1(:,jj)>t1(t,jj))/nT;
+%     end
     parfor jj=1:size(tavg,2)
-        pval(t,jj)=sum(r1(:,jj)>t1(t,jj))/nT;
+        pval(t,jj)=tcdf((mean(r1(:,jj))-t1(t,jj))/std(r1(:,jj)),1); % This is from 1 sample t-test formula from wikipedia https://en.wikipedia.org/wiki/Student's_t-test
     end
     t
 end
@@ -58,18 +61,22 @@ rsurf = readdfs(fullfile(p_dir_ref,'reference',[ref,'.aparc.a2009s.32k_fs.very_s
 t=101;
 nV=length(lsurf.vertices);
 blk=79:105;% present story
+%blk=[79:105,
 blk=157:183;% present story
-%blk=268:299;%present story
+blk=268:299;%present story
 %blk=137:145;% present math 
 %blk=194:202;%present math
-%blk=150:154;
+blk=175:177;
 figure;
-patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0*(mean(pval(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;colormap jet
 
 figure;
-patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0*(mean(pval(blk,1+nV:2*nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1+nV:2*nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
 camlight; axis equal; axis off;material dull; colormap jet
+
+
+save pval pval
 
 
 
