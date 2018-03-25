@@ -67,6 +67,7 @@ blk=268:299;%present story
 %blk=137:145;% present math 
 %blk=194:202;%present math
 blk=175:177;
+%blk=185:187; % response story
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
 camlight; axis equal; axis off;material dull;colormap jet
@@ -78,7 +79,12 @@ camlight; axis equal; axis off;material dull; colormap jet
 
 save pval pval
 
+pval_sm=0*pval;
+parfor jj=1:size(pval,2)
+    pval_sm(:,jj)=smooth(pval(:,jj));
+end
 
+save pval_sm pval_sm
 
 
 %[tskFitted,~, ~] = normalizeData(tskFitted);
