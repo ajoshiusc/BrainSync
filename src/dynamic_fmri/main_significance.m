@@ -7,6 +7,8 @@ addpath(genpath('myfuncs'));
 addpath(genpath('/home/ajoshi/coding_ground/svreg/src'));
 fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tavg.mat';
 load(fmridatfile);
+fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/ravg.mat';
+load(fmridatfile);
 NCMP=21;
 W=[1:(NCMP+1)/2,(NCMP-1)/2:-1:1]';
 [~,D]=pca(ravg');
