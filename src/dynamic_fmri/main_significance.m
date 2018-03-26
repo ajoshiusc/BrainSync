@@ -21,7 +21,7 @@ Cind = (NCMP-1)/2+1;
 for i = 1:size(tavg,1)-NCMP
     xin = tavg(i:i+NCMP-1, :);
     [xin, ~, nrm] = normalizeData(xin);
-    dd = brainSync_wt(xin, D,W);
+    dd = brainSync_wt(xin, D, W);
     dd = dd.*nrm;
     tskFitted(Cind+i-1, :) = dd(Cind, :);
     fprintf('%d,',i);
@@ -32,7 +32,7 @@ Cind = (NCMP-1)/2+1;
 for i = 1:size(ravg,1)-NCMP
     xin = ravg(i:i+NCMP-1, :);
     [xin, ~, nrm] = normalizeData(xin);
-    dd = brainSync(xin, D);
+    dd = brainSync_wt(xin, D, W);
     dd = dd.*nrm;
     rFitted(Cind+i-1, :) = dd(Cind, :);
     fprintf('%d,',i);
@@ -78,14 +78,14 @@ patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0-(mean(
 camlight; axis equal; axis off;material dull; colormap jet
 
 
-save pval pval
+save pval_wt pval
 
 pval_sm=0*pval;
 parfor jj=1:size(pval,2)
     pval_sm(:,jj)=smooth(pval(:,jj));
 end
 
-save pval_sm pval_sm
+save pval_sm_wt pval_sm
 
 
 %[tskFitted,~, ~] = normalizeData(tskFitted);
