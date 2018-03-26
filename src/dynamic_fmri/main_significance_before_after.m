@@ -9,7 +9,7 @@ fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/diffafter_res
 %fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tavg_rest.mat';
 
 %fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tskFitted.mat';
-clim=[-1,1];
+clim=[-.1,.1];
 cmap=bipolarcmapW(100,clim,'linear','br');
 cname='diffafter_rest';
 
@@ -49,7 +49,7 @@ blk=157:183;% present story
 %blk=137:145;% present math 
 %blk=194:202;%present math
 %blk=150:154;
-%blk=104;
+blk=176;
 l=(sum((dtseries(blk,:)-lav),1));
 
 l1=l(1:length(lsurf.vertices))';%smooth_surf_function(lsurf,l(1:length(lsurf.vertices))',.3,.3);
