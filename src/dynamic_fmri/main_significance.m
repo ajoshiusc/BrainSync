@@ -5,12 +5,14 @@ clc;clear all;close all;
 addpath(genpath('cifti_toolbox'));
 addpath(genpath('myfuncs'));
 addpath(genpath('/home/ajoshi/coding_ground/svreg/src'));
-fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tavg.mat';
-load(fmridatfile);
-fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/ravg.mat';
+fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tavg_LANGUAGE_rest_wt.mat';
+
+load(fmridatfile);tavg=dtseries;
+fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/ravg_wt.mat';
 load(fmridatfile);
 NCMP=21;
-W=[1:(NCMP+1)/2,(NCMP-1)/2:-1:1]';
+W=([1:(NCMP+1)/2,(NCMP-1)/2:-1:1].^2)';
+%W=ones(size(W));
 [~,D]=pca(ravg');
 D=D(:,1:NCMP);
 D=normalizeData(D');
@@ -68,14 +70,15 @@ blk=268:299;%present story
 %blk=137:145;% present math 
 %blk=194:202;%present math
 blk=175:177;
+%blk=283:287;
 %blk=185:187; % response story
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
-camlight; axis equal; axis off;material dull;colormap jet
+camlight; axis equal; axis off;material dull;colormap jet;axis tight;
 
 figure;
 patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1+nV:2*nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
-camlight; axis equal; axis off;material dull; colormap jet
+camlight; axis equal; axis off;material dull; colormap jet;axis tight;
 
 
 save pval_wt pval
