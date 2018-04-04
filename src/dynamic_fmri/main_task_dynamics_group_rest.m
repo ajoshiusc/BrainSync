@@ -50,7 +50,8 @@ tavg=normalizeData(tavg);dtseries=tavg;
 save(sprintf('tavg_%s_rest_wt.mat',task),'dtseries');
 %% Compute BrainSync Averaged rfmri
 ref = '196750'; 
-rfname = sprintf('/data_disk/HCP_All/%s/MNINonLinear/Results/tfMRI_%s_LR/tfMRI_%s_LR_Atlas.dtseries.nii',ref,task,task);
+rfname = sprintf('/deneb_disk/HCP/%s/MNINonLinear/Results/rfMRI_REST1_LR/rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.nii',subname);
+%sprintf('/data_disk/HCP_All/%s/MNINonLinear/Results/tfMRI_%s_LR/tfMRI_%s_LR_Atlas.dtseries.nii',ref,task,task);
 %rfname = sprintf('/deneb_disk/HCP_filt_data/%s_rfMRI_REST1_LR_Atlas_hp2000_clean.dtseries.filt.mat',ref);
 %refdata=load(rfname);
 refdata=ft_read_cifti(rfname);
