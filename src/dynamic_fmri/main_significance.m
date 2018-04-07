@@ -4,6 +4,7 @@
 clc;clear all;close all;
 addpath(genpath('cifti_toolbox'));
 addpath(genpath('myfuncs'));
+addpath('/home/ajoshi/coding_ground/bfp/src/Visualization');
 addpath(genpath('/home/ajoshi/coding_ground/svreg/src'));
 fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/tavg_LANGUAGE_rest_wt.mat';
 
@@ -11,7 +12,7 @@ load(fmridatfile);tavg=dtseries;
 fmridatfile='/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/ravg_wt.mat';
 load(fmridatfile);
 NCMP=21;
-W=([1:(NCMP+1)/2,(NCMP-1)/2:-1:1].^2)';
+W=([1:(NCMP+1)/2,(NCMP-1)/2:-1:1])';
 %W=ones(size(W));
 [~,D]=pca(ravg');
 D=D(:,1:NCMP);
@@ -77,24 +78,46 @@ blk=175:177;
 %blk=185:187; % response story
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
-camlight; axis equal; axis off;material dull;colormap jet;axis tight;
+camlight; axis equal; axis off;material dull;colormap jet;axis tight;caxis([0,.8]);
 
 figure;
 patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0-(mean(pval(blk,1+nV:2*nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
-camlight; axis equal; axis off;material dull; colormap jet;axis tight;
+camlight; axis equal; axis off;material dull; colormap jet;axis tight;caxis([0,.8]);
 
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',1.0-(mean(pval_rest(blk,1:nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
-camlight; axis equal; axis off;material dull;colormap jet;axis tight;
+camlight; axis equal; axis off;material dull;colormap jet;axis tight;caxis([0,.8]);
 
 figure;
 patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',1.0-(mean(pval_rest(blk,1+nV:2*nV))'),'edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
-camlight; axis equal; axis off;material dull; colormap jet;axis tight;
+camlight; axis equal; axis off;material dull; colormap jet;axis tight;caxis([0,.8]);
 %%%%
+cmap=bipolarcmapW(100,[-.1,.1],'linear','br');
+
+figure;
+patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',mean(tavg(blk,1:nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+camlight; axis equal; axis off;material dull;colormap(cmap);axis tight;caxis([-0.1,.1]);
+
+figure;
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',mean(tavg(blk,1+nV:2*nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+camlight; axis equal; axis off;material dull;colormap(cmap);axis tight;caxis([-0.1,.1]);
+
+
+figure;
+patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',mean(t1(blk,1:nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
+camlight; axis equal; axis off;material dull;colormap(cmap);axis tight;caxis([-0.1,.1]);
+
+figure;
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',mean(t1(blk,1+nV:2*nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+camlight; axis equal; axis off;material dull;colormap(cmap);axis tight;caxis([-0.1,.1]);
+
 figure;
 patch('faces',lsurf.faces,'vertices',lsurf.vertices,'facevertexcdata',mean(tskFitted(blk,1:nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(-90,0);
-camlight; axis equal; axis off;material dull;colormap jet;axis tight;
+camlight; axis equal; axis off;material dull;colormap(cmap);axis tight;caxis([-0.1,.1]);
 
+figure;
+patch('faces',rsurf.faces,'vertices',rsurf.vertices,'facevertexcdata',mean(tskFitted(blk,1+nV:2*nV),1)','edgecolor','none','facecolor','interp');axis equal;axis off;view(90,0);
+camlight; axis equal; axis off;material dull;colormap jet;axis tight;caxis([-0.1,.1]);
 
 
 save pval_wt pval pval_rest

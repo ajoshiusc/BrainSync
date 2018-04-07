@@ -18,9 +18,14 @@ function [Y2, R] = brainSync_wt(X, Y, W)
         warning('The input is possibly transposed. Please check to make sure that the input is time x vertices!');
     end
 
-    C = (W.*X) * Y';
+    C = ((W.^2).*X) * Y';
     [U, ~, V] = svd(C);
     R = U * V';
     Y2 = R * Y;
+    
+%     wX=W.*X; wY2=W.*Y2; wX=wX(:); wY2=wY2(:);
+%     alpha = sum(wX.*wY2)/sum(wY2.*wY2);
+%     
+%     Y2=alpha*Y2;
     
 end
