@@ -117,10 +117,11 @@ for ind in range(nSub-15):
 atlas /= (nSub-15)
 spio.savemat('ADHD_avg_atlas.mat', {'atlas':atlas})
 #%% Atlas to normal subjects diff
-diff = 0
-for ind in range(nSub-15,nSub):
-    Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
-    diff += (Y2 - atlas) ** 2
+diff = sp.zeros([sub_data.shape[1],15])
+
+for ind in range(15):
+    Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, nSub-15+ind])
+    diff[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
 
 spio.savemat('ADHD_diff_avg_atlas.mat', {'diff': diff})
@@ -135,16 +136,16 @@ for sub in adhdInattentive:
     d, _, _ = normalizeData(data)
     if count1 == 0:
         sub_data = sp.zeros((d.shape[0], d.shape[1], len(adhdInattentive)))
-        
     sub_data[:, :, count1] = d
     count1 += 1
     print(count1, )
-#%% Atlas to normal subjects diff
-diffAdhdInatt = 0
 
-for ind in range(sub_data.shape[2]):
+#%% Atlas to normal subjects diff
+diffAdhdInatt = sp.zeros([sub_data.shape[1],15])
+
+for ind in range(15):
     Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
-    diffAdhdInatt += (Y2 - atlas) ** 2
+    diffAdhdInatt[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
 
 spio.savemat('ADHD_diff_adhd_inattentive.mat', {'diffAdhdInatt': diffAdhdInatt})
@@ -157,43 +158,43 @@ a=spio.loadmat('/home/ajoshi/coding_ground/bfp/supp_data/USCBrain_grayord_labels
 labs=a['labels']
 lsurf.attributes = np.zeros((lsurf.vertices.shape[0]))
 rsurf.attributes = np.zeros((rsurf.vertices.shape[0]))
-lsurf=smooth_patch(lsurf,iterations=3000)
-rsurf=smooth_patch(rsurf,iterations=3000)
+lsurf=smooth_patch(lsurf,iterations=1500)
+rsurf=smooth_patch(rsurf,iterations=1500)
 labs[sp.isnan(labs)]=0
-diff=diff*(labs>0)
-diffAdhdInatt=diffAdhdInatt*(labs>0)
+diff=diff*(labs.T>0)
+diffAdhdInatt=diffAdhdInatt*(labs.T>0)
 
 nVert = lsurf.vertices.shape[0]
 
 #%% Visualization of normal diff from the atlas
-lsurf.attributes = np.sqrt(np.sum((diff), axis=0))
+lsurf.attributes = np.sqrt(np.sum((diff), axis=1))
 lsurf.attributes = lsurf.attributes[:nVert]/15
-rsurf.attributes = np.sqrt(np.sum((diff), axis=0))
+rsurf.attributes = np.sqrt(np.sum((diff), axis=1))
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
 lsurf = patch_color_attrib(lsurf, clim=[0.1,.3])
 rsurf = patch_color_attrib(rsurf, clim=[0.1,.3])
 
-view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1normal.png', show=1)
-view_patch_vtk(rsurf, azimuth=-90, elevation=180, roll=-90,
+view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
                outfile='r1normal.png', show=1)
 
 #%% Visualization of ADHD diff from the atlas
-lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=0))
+lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))
 lsurf.attributes = lsurf.attributes[:nVert]/15
-rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=0))
+rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
 lsurf = patch_color_attrib(lsurf, clim=[0.1, .3])
 rsurf = patch_color_attrib(rsurf, clim=[0.1, .3])
 
-view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1adhd.png', show=1)
-view_patch_vtk(rsurf, azimuth=-90, elevation=180, roll=-90,
+view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
                outfile='r1adhd.png', show=1)
 
 #%%
-lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=0))-np.sqrt(np.sum((diff), axis=0))
-rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=0))-np.sqrt(np.sum((diff), axis=0))
+lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))-np.sqrt(np.sum((diff), axis=1))
+rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))-np.sqrt(np.sum((diff), axis=1))
 lsurf.attributes = lsurf.attributes[:nVert]/15
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
 
@@ -202,27 +203,38 @@ rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,3,3)
 lsurf = patch_color_attrib(lsurf, clim=[-0.01, 0.01])
 rsurf = patch_color_attrib(rsurf, clim=[-0.01, 0.01])
 
-view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1adhd_normal_diff.png', show=1)
-view_patch_vtk(rsurf, azimuth=-90, elevation=180, roll=-90,
+view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
                outfile='r1adhd_normal_diff.png', show=1)
 
 #%%
-pv = sp.zeros(diff.shape[1])
-for vind in range(diff.shape[1]):
-    _, pv[vind] = sp.stats.ranksums(diff[:, vind], diffAdhdInatt[:, vind])
+pv = sp.zeros(diff.shape[0])
+for vind in range(diff.shape[0]):
+    _, pv[vind] = sp.stats.ranksums(diff[vind,:], diffAdhdInatt[vind,:])
 
+#%%
+from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
 
-lsurf.attributes = pv
-rsurf.attributes = pv
+t,pvfdr=FDR(pv)
+
+lsurf.attributes = pvfdr
+rsurf.attributes = pvfdr
 lsurf.attributes = lsurf.attributes[:nVert]
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]
+lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,3,3)
+rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,3,3)
 
-lsurf = patch_color_attrib(lsurf, clim=[0, .01])
-rsurf = patch_color_attrib(rsurf, clim=[0, .01])
+lsurf = patch_color_attrib(lsurf, clim=[0, .8])
+rsurf = patch_color_attrib(rsurf, clim=[0, .8])
 
-view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
+view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile='l1adhd_normal_pval.png', show=1)
-view_patch_vtk(rsurf, azimuth=-90, elevation=180, roll=-90,
+view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
+               outfile='l2adhd_normal_pval.png', show=1)
+
+view_patch_vtk(rsurf, azimuth=90, elevation=180, roll=90,
                outfile='r1adhd_normal_pval.png', show=1)
+view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
+               outfile='r2adhd_normal_pval.png', show=1)
 
