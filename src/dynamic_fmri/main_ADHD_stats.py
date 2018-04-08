@@ -7,6 +7,7 @@ from surfproc import view_patch_vtk, patch_color_attrib, smooth_surf_function, s
 from dfsio import readdfs
 import os
 from brainsync import normalizeData, brainSync
+from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
 from sklearn.manifold import MDS
 import matplotlib.pyplot as plt
 import h5py
@@ -214,12 +215,11 @@ for vind in range(diff.shape[0]):
     _, pv[vind] = sp.stats.ranksums(diff[vind,:], diffAdhdInatt[vind,:])
 
 #%%
-from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
 
 t,pvfdr=FDR(pv)
 
-lsurf.attributes = pvfdr
-rsurf.attributes = pvfdr
+lsurf.attributes = 1- pv
+rsurf.attributes = 1 - pv
 lsurf.attributes = lsurf.attributes[:nVert]
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]
 lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,3,3)
