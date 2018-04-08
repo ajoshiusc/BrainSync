@@ -24,7 +24,7 @@ nsub = 0
 
 #%% Read CSV File
 normSub = [];adhdCombinedSub=[];adhdHyperactiveSub=[];adhdInattentive=[];
-with open('/deneb_disk/ADHD_Peking_bfp/Peking_1_phenotypic.csv', newline='') as csvfile:    
+with open('/deneb_disk/ADHD_Peking_bfp/Peking_all_phenotypic.csv', newline='') as csvfile:    
     creader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     for row in creader:
         dx=row['DX']
@@ -50,9 +50,11 @@ with open('/deneb_disk/ADHD_Peking_bfp/Peking_1_phenotypic.csv', newline='') as 
         print(sub, dx, qc)
 
 
-
+normSubOrig = normSub
 
 #%% Read Normal Subjects
+        
+normSub = normSub[:50]
 count1 = 0
 for sub in normSub:
     fname = os.path.join(p_dir, sub + '_rest_bold.32k.GOrd.mat')
@@ -61,67 +63,43 @@ for sub in normSub:
     d, _, _ = normalizeData(data)
 
     if count1 == 0:
-        sub_data = sp.zeros((d.shape[0], d.shape[1], len(normSub)))
-
-    sub_data[:, :, count1] = d
+        sub_data = sp.zeros((235, d.shape[1], len(normSub)))
+        
+    sub_data[:, :, count1] = d[:235,]
     count1 += 1
     print(count1, )
-
-#%%
-nSub = sub_data.shape[2]
-print(nSub)
-dist_all_orig = sp.zeros([nSub, nSub])
-dist_all_rot = dist_all_orig.copy()
- 
-for ind1 in range(nSub):  
-    for ind2 in range(nSub):
-        dist_all_orig[ind1, ind2] = sp.linalg.norm(sub_data[:, :, ind1] -
-                                                   sub_data[:, :, ind2])
-        sub_data_rot, _ = brainSync(X=sub_data[:, :, ind1],
-                                    Y=sub_data[:, :, ind2])
-        dist_all_rot[ind1, ind2] = sp.linalg.norm(sub_data[:, :, ind1] -
-                                                  sub_data_rot)
-        print(ind1, ind2)
-
-
-sp.savez('ADHD_pairwise_dist.npz', dist_all_rot=dist_all_rot,
-         dist_all_orig=dist_all_orig, normSub=normSub)
-######
-#%%
-a = sp.load('ADHD_pairwise_dist.npz')
-lst = a['lst']
-q = sp.argmin(a['dist_all_rot'][:-1, :-1].sum(1))
-print('The representative subject is: %s ' % lst[q])
-m = MDS(n_components=2, dissimilarity='precomputed')
-e = m.fit_transform(a['dist_all_rot'])
-print(e)
-fig, ax = plt.subplots()
-ax.scatter(e[:, 0], e[:, 1])
-for i in range(e.shape[0]):
-    ax.annotate(lst[i], (e[i, 0], e[i, 1]))
-
-#%% Compute difference
-diff = 0; q=3
-for ind in range(15):
-    Y2, _ = brainSync(X=sub_data[:, :, q], Y=sub_data[:, :, ind])
-    diff += (Y2 - sub_data[:, :, q]) ** 2
-    print(ind, end=',')
-
-spio.savemat('ADHD_norm_diff2sub1.mat', {'diff': diff})
+    if count1 == 50:
+        break
 
 #%% Create Average atlas by synchronizing everyones data to one subject
-atlas = 0
+atlas = 0; q=3
 nSub = len(normSub)
-for ind in range(nSub-15):
+for ind in range(nSub):
     Y2, _ = brainSync(X=sub_data[:, :, q], Y=sub_data[:, :, ind])
     atlas += Y2
-atlas /= (nSub-15)
+atlas /= (nSub)
 spio.savemat('ADHD_avg_atlas.mat', {'atlas':atlas})
-#%% Atlas to normal subjects diff
-diff = sp.zeros([sub_data.shape[1],15])
+#%% Read Normal Subjects
+normSub = normSubOrig[50:135]
+count1 = 0
+for sub in normSub:
+    fname = os.path.join(p_dir, sub + '_rest_bold.32k.GOrd.mat')
+    df = spio.loadmat(fname)
+    data = df['dtseries'].T
+    d, _, _ = normalizeData(data)
+    if count1 == 0:
+        sub_data = sp.zeros((235, d.shape[1], 50))
+    sub_data[:, :, count1] = d[:235,]
+    count1 += 1
+    print(count1, )
+    if count1 == 50:
+        break
 
-for ind in range(15):
-    Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, nSub-15+ind])
+#%% Atlas to normal subjects diff
+diff = sp.zeros([sub_data.shape[1],50])
+
+for ind in range(50):
+    Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
     diff[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
 
@@ -136,15 +114,18 @@ for sub in adhdInattentive:
     data = df['dtseries'].T
     d, _, _ = normalizeData(data)
     if count1 == 0:
-        sub_data = sp.zeros((d.shape[0], d.shape[1], len(adhdInattentive)))
-    sub_data[:, :, count1] = d
+        sub_data = sp.zeros((235, d.shape[1], 50))
+    sub_data[:, :, count1] = d[:235,]
     count1 += 1
     print(count1, )
+    if count1 == 50:
+        break
+
 
 #%% Atlas to normal subjects diff
-diffAdhdInatt = sp.zeros([sub_data.shape[1],15])
+diffAdhdInatt = sp.zeros([sub_data.shape[1],50])
 
-for ind in range(15):
+for ind in range(50):
     Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
     diffAdhdInatt[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
@@ -169,11 +150,11 @@ nVert = lsurf.vertices.shape[0]
 
 #%% Visualization of normal diff from the atlas
 lsurf.attributes = np.sqrt(np.sum((diff), axis=1))
-lsurf.attributes = lsurf.attributes[:nVert]/15
+lsurf.attributes = lsurf.attributes[:nVert]/50
 rsurf.attributes = np.sqrt(np.sum((diff), axis=1))
-rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
-lsurf = patch_color_attrib(lsurf, clim=[0.1,.3])
-rsurf = patch_color_attrib(rsurf, clim=[0.1,.3])
+rsurf.attributes = rsurf.attributes[nVert:2*nVert]/50
+lsurf = patch_color_attrib(lsurf, clim=[0,.2])
+rsurf = patch_color_attrib(rsurf, clim=[0,.2])
 
 view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1normal.png', show=1)
@@ -182,11 +163,11 @@ view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
 
 #%% Visualization of ADHD diff from the atlas
 lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))
-lsurf.attributes = lsurf.attributes[:nVert]/15
+lsurf.attributes = lsurf.attributes[:nVert]/50
 rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))
-rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
-lsurf = patch_color_attrib(lsurf, clim=[0.1, .3])
-rsurf = patch_color_attrib(rsurf, clim=[0.1, .3])
+rsurf.attributes = rsurf.attributes[nVert:2*nVert]/50
+lsurf = patch_color_attrib(lsurf, clim=[0, .2])
+rsurf = patch_color_attrib(rsurf, clim=[0, .2])
 
 view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1adhd.png', show=1)
@@ -196,13 +177,13 @@ view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
 #%%
 lsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))-np.sqrt(np.sum((diff), axis=1))
 rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))-np.sqrt(np.sum((diff), axis=1))
-lsurf.attributes = lsurf.attributes[:nVert]/15
-rsurf.attributes = rsurf.attributes[nVert:2*nVert]/15
+lsurf.attributes = lsurf.attributes[:nVert]/50
+rsurf.attributes = rsurf.attributes[nVert:2*nVert]/50
 
-lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,3,3)
-rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,3,3)
-lsurf = patch_color_attrib(lsurf, clim=[-0.01, 0.01])
-rsurf = patch_color_attrib(rsurf, clim=[-0.01, 0.01])
+lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,1,1)
+rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,1,1)
+lsurf = patch_color_attrib(lsurf, clim=[-0.005, 0.005])
+rsurf = patch_color_attrib(rsurf, clim=[-0.005, 0.005])
 
 view_patch_vtk(lsurf, azimuth=100, elevation=180, roll=90,
                outfile='l1adhd_normal_diff.png', show=1)
@@ -216,17 +197,17 @@ for vind in range(diff.shape[0]):
 
 #%%
 
-t,pvfdr=FDR(pv)
+t,pvfdr=FDR(pv[labs[0,:]>0])
 
-lsurf.attributes = 1- pv
-rsurf.attributes = 1 - pv
+lsurf.attributes = 1-pv
+rsurf.attributes = 1-pv
 lsurf.attributes = lsurf.attributes[:nVert]
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]
 lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,3,3)
 rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,3,3)
 
-lsurf = patch_color_attrib(lsurf, clim=[0, .8])
-rsurf = patch_color_attrib(rsurf, clim=[0, .8])
+lsurf = patch_color_attrib(lsurf, clim=[0.5,.8])
+rsurf = patch_color_attrib(rsurf, clim=[0.5,.8])
 
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile='l1adhd_normal_pval.png', show=1)
