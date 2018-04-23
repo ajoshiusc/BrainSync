@@ -17,7 +17,7 @@ import numpy as np
 from scipy.stats import f as f_distrib
 
 def hotelling_t2(X,Y):
-
+# Hotelling t2 test on X and Y where X and Y are samplex x features arrays
     nx=X.shape[1];ny=Y.shape[1];p=X.shape[0];
     Xbar=X.mean(1);Ybar=Y.mean(1);
     Xbar=Xbar.reshape(Xbar.shape[0],1,Xbar.shape[1])

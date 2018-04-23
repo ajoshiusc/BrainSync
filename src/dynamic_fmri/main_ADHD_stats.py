@@ -2,7 +2,7 @@
 import scipy.io as spio
 import scipy as sp
 import numpy as np
-from fmri_methods_sipi import rot_sub_data
+from fmri_methods_sipi import rot_sub_data, hotelling_t2
 from surfproc import view_patch_vtk, patch_color_attrib, smooth_surf_function, smooth_patch
 from dfsio import readdfs
 import os
@@ -180,8 +180,8 @@ rsurf.attributes = np.sqrt(np.sum((diffAdhdInatt), axis=1))-np.sqrt(np.sum((diff
 lsurf.attributes = lsurf.attributes[:nVert]/50
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]/50
 
-lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,1,1)
-rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,1,1)
+#lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,1,1)
+#rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,1,1)
 lsurf = patch_color_attrib(lsurf, clim=[-0.005, 0.005])
 rsurf = patch_color_attrib(rsurf, clim=[-0.005, 0.005])
 
@@ -203,11 +203,11 @@ lsurf.attributes = 1-pv
 rsurf.attributes = 1-pv
 lsurf.attributes = lsurf.attributes[:nVert]
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]
-lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,3,3)
-rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,3,3)
+lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,.3,.3)
+rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,.3,.3)
 
-lsurf = patch_color_attrib(lsurf, clim=[0.5,.8])
-rsurf = patch_color_attrib(rsurf, clim=[0.5,.8])
+lsurf = patch_color_attrib(lsurf, clim=[0.7,1.0])
+rsurf = patch_color_attrib(rsurf, clim=[0.7,1.0])
 
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile='l1adhd_normal_pval.png', show=1)
@@ -218,4 +218,9 @@ view_patch_vtk(rsurf, azimuth=90, elevation=180, roll=90,
                outfile='r1adhd_normal_pval.png', show=1)
 view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
                outfile='r2adhd_normal_pval.png', show=1)
+
+#%%
+from fmri_methods_sipi import hotelling_t2
+
+hotelling_t2(fADHD,fNC)
 
