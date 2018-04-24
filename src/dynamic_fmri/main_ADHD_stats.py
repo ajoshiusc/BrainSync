@@ -2,17 +2,15 @@
 import scipy.io as spio
 import scipy as sp
 import numpy as np
-from fmri_methods_sipi import rot_sub_data, hotelling_t2
+from fmri_methods_sipi import hotelling_t2
 from surfproc import view_patch_vtk, patch_color_attrib, smooth_surf_function, smooth_patch
 from dfsio import readdfs
 import os
 from brainsync import normalizeData, brainSync
 from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
-from sklearn.manifold import MDS
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
-import h5py
 import csv
+
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
 NDim = 8
@@ -28,10 +26,10 @@ normSub = [];adhdCombinedSub=[];adhdHyperactiveSub=[];adhdInattentive=[];
 with open('/deneb_disk/ADHD_Peking_bfp/Peking_all_phenotypic.csv', newline='') as csvfile:    
     creader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     for row in creader:
-        dx=row['DX']
-        sub=row['ScanDir ID']
-        qc=row['QC_Rest_1']
-        fname = os.path.join(p_dir, sub + '_rest_bold.32k.GOrd.mat')        
+        dx = row['DX']
+        sub = row['ScanDir ID']
+        qc = row['QC_Rest_1']
+        fname = os.path.join(p_dir, sub + '_rest_bold.32k.GOrd.mat')
 
         if not os.path.isfile(fname) or int(qc) != 1:
             continue
@@ -41,10 +39,10 @@ with open('/deneb_disk/ADHD_Peking_bfp/Peking_all_phenotypic.csv', newline='') a
 
         if int(dx) == 1:
             adhdCombinedSub.append(sub)
-            
+
         if int(dx) == 2:
             adhdHyperactiveSub.append(sub)
-            
+
         if int(dx) == 3:
             adhdInattentive.append(sub)
 
@@ -54,7 +52,6 @@ with open('/deneb_disk/ADHD_Peking_bfp/Peking_all_phenotypic.csv', newline='') a
 normSubOrig = normSub
 
 #%% Read Normal Subjects
-        
 normSub = normSub[:50]
 count1 = 0
 for sub in normSub:
@@ -65,8 +62,8 @@ for sub in normSub:
 
     if count1 == 0:
         sub_data = sp.zeros((235, d.shape[1], len(normSub)))
-        
-    sub_data[:, :, count1] = d[:235,]
+
+    sub_data[:, :, count1] = d[:235, ]
     count1 += 1
     print(count1, )
     if count1 == 50:
@@ -211,17 +208,17 @@ for vind in range(diff.shape[0]):
 
 #%%
 
-t,pvfdr=FDR(pv[labs[0,:]>0])
+t, pvfdr = FDR(pv[labs[0, :] > 0])
 
 lsurf.attributes = 1-pv
 rsurf.attributes = 1-pv
 lsurf.attributes = lsurf.attributes[:nVert]
 rsurf.attributes = rsurf.attributes[nVert:2*nVert]
-lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,.3,.3)
-rsurf.attributes = smooth_surf_function(rsurf,rsurf.attributes,.3,.3)
+lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes, .3, .3)
+rsurf.attributes = smooth_surf_function(rsurf, rsurf.attributes, .3, .3)
 
-lsurf = patch_color_attrib(lsurf, clim=[0.7,1.0])
-rsurf = patch_color_attrib(rsurf, clim=[0.7,1.0])
+lsurf = patch_color_attrib(lsurf, clim=[0.7, 1.0])
+rsurf = patch_color_attrib(rsurf, clim=[0.7, 1.0])
 
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile='l1adhd_normal_pval.png', show=1)
@@ -234,14 +231,13 @@ view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
                outfile='r2adhd_normal_pval.png', show=1)
 
 #%%
-from fmri_methods_sipi import hotelling_t2
 
-fa = sp.transpose(fADHD,axes=[0,2,1])
-fc = sp.transpose(fNC,axes=[0,2,1])
-pv, t2 = hotelling_t2(fa[:,:,:nVert], fc[:,:,:nVert])
+fa = sp.transpose(fADHD, axes=[0, 2, 1])
+fc = sp.transpose(fNC, axes=[0, 2, 1])
+pv, t2 = hotelling_t2(fa[:, :, :nVert], fc[:, :, :nVert])
 lsurf.attributes = 1.0 - pv
-lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,.3,.3)
-lsurf = patch_color_attrib(lsurf, clim=[0.7,1.0])
+lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes, .3, .3)
+lsurf = patch_color_attrib(lsurf, clim=[0.7, 1.0])
 view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
                outfile='l1multiadhd_normal_pval.png', show=1)
 
