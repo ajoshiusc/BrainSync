@@ -9,12 +9,13 @@ import os
 from brainsync import normalizeData, brainSync
 from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
 from sklearn.manifold import MDS
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import h5py
 import csv
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
-
+NDim = 8
 #%%
 
 p_dir = '/deneb_disk/ADHD_Peking_bfp'
@@ -79,6 +80,15 @@ for ind in range(nSub):
     atlas += Y2
 atlas /= (nSub)
 spio.savemat('ADHD_avg_atlas.mat', {'atlas':atlas})
+
+#%% Compute PCA basis using atlas
+
+pca = PCA(n_components=NDim)
+pca.fit(atlas.T)
+print(pca.explained_variance_ratio_)
+
+
+
 #%% Read Normal Subjects
 normSub = normSubOrig[50:135]
 count1 = 0
@@ -95,11 +105,13 @@ for sub in normSub:
     if count1 == 50:
         break
 
+#%% Do PCA of Normal Controls
 #%% Atlas to normal subjects diff
 diff = sp.zeros([sub_data.shape[1],50])
-
+fNC = sp.zeros((NDim, sub_data.shape[1], 50))
 for ind in range(50):
     Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
+    fNC[:, :, ind] = pca.transform(Y2.T).T
     diff[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
 
@@ -122,11 +134,13 @@ for sub in adhdInattentive:
         break
 
 
-#%% Atlas to normal subjects diff
+#%% Atlas to normal subjects diff & Do PCA of ADHD
 diffAdhdInatt = sp.zeros([sub_data.shape[1],50])
+fADHD = sp.zeros((NDim, sub_data.shape[1], 50))
 
 for ind in range(50):
     Y2, _ = brainSync(X=atlas, Y=sub_data[:, :, ind])
+    fADHD[:, :, ind] = pca.transform(Y2.T).T
     diffAdhdInatt[:, ind] = sp.sum((Y2 - atlas) ** 2, axis=0)
     print(ind,)
 
@@ -222,5 +236,12 @@ view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
 #%%
 from fmri_methods_sipi import hotelling_t2
 
-hotelling_t2(fADHD,fNC)
+fa = sp.transpose(fADHD,axes=[0,2,1])
+fc = sp.transpose(fNC,axes=[0,2,1])
+pv, t2 = hotelling_t2(fa[:,:,:nVert], fc[:,:,:nVert])
+lsurf.attributes = 1.0 - pv
+lsurf.attributes = smooth_surf_function(lsurf,lsurf.attributes,.3,.3)
+lsurf = patch_color_attrib(lsurf, clim=[0.7,1.0])
+view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
+               outfile='l1multiadhd_normal_pval.png', show=1)
 
