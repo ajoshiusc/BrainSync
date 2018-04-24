@@ -13,7 +13,7 @@ import csv
 
 BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
-NDim = 8
+NDim = 21
 #%%
 
 p_dir = '/deneb_disk/ADHD_Peking_bfp'
@@ -234,10 +234,32 @@ view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
 
 fa = sp.transpose(fADHD, axes=[0, 2, 1])
 fc = sp.transpose(fNC, axes=[0, 2, 1])
-pv, t2 = hotelling_t2(fa[:, :, :nVert], fc[:, :, :nVert])
-lsurf.attributes = 1.0 - pv
-lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes, .3, .3)
+#fa = fa * 
+#fc = fc * (labs > 0)
+labs=sp.squeeze(labs)
+pv, t2 = hotelling_t2(fa[:, :, (labs > 0)], fc[:, :, (labs > 0)])
+lsurf.attributes=sp.zeros((labs.shape[0]))
+lsurf.attributes[labs>0] = 1.0 - pv
+lsurf.attributes = smooth_surf_function(lsurf, lsurf.attributes[:nVert], 1, 1)
 lsurf = patch_color_attrib(lsurf, clim=[0.7, 1.0])
-view_patch_vtk(lsurf, azimuth=-90, elevation=180, roll=-90,
+view_patch_vtk(lsurf, azimuth=90, elevation=180, roll=90,
                outfile='l1multiadhd_normal_pval.png', show=1)
+view_patch_vtk(lsurf, azimuth=-100, elevation=180, roll=-90,
+               outfile='l2multiadhd_normal_pval.png', show=1)
+
+rsurf.attributes = sp.zeros((labs.shape[0]))
+rsurf.attributes[labs > 0] = 1.0 - pv
+rsurf.attributes = smooth_surf_function(rsurf,
+                                        rsurf.attributes[nVert:2*nVert], 1, 1)
+rsurf = patch_color_attrib(rsurf, clim=[0.7, 1.0])
+view_patch_vtk(rsurf, azimuth=90, elevation=180, roll=90,
+               outfile='r1multiadhd_normal_pval.png', show=1)
+view_patch_vtk(rsurf, azimuth=-100, elevation=180, roll=-90,
+               outfile='r2multiadhd_normal_pval.png', show=1)
+
+
+
+
+#%% Automatic Classification of subtypes
+
 
