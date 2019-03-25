@@ -67,5 +67,5 @@ end
 dataL(~idxNaNL,:)=fmri_task_fittedL';
 dataR(~idxNaNR,:)=fmri_task_fittedR';
 
-save('fmri_task_fitted_rest_wt0.mat','dataL', 'dataR', '-v7.3');
+save('fmri_task_fitted_rest_wt.mat','dataL', 'dataR', '-v7.3');
 
