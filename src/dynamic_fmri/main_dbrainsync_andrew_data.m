@@ -51,15 +51,15 @@ fmri_task_fittedR = zeros(size(fmri_taskR));
 Cind = (NCMP-1)/2+1;
 for i = 1:size(fmri_taskL,1)-NCMP
     xinL = fmri_taskL(i:i+NCMP-1, :);
-    [xinL, ~, nrmL] = normalizeData(xinL);
+%    [xinL, ~, nrmL] = normalizeData(xinL);
     ddL = DbrainSync_wt(xinL, DL, W);
-    ddL = ddL.*nrmL;
+%    ddL = ddL.*nrmL;
     fmri_task_fittedL(Cind+i-1, :) = ddL(Cind, :);
     
     xinR = fmri_taskR(i:i+NCMP-1, :);
-    [xinR, ~, nrmR] = normalizeData(xinR);
+%    [xinR, ~, nrmR] = normalizeData(xinR);
     ddR = DbrainSync_wt(xinR, DR, W);
-    ddR = ddR.*nrmR;
+%    ddR = ddR.*nrmR;
     fmri_task_fittedR(Cind+i-1, :) = ddR(Cind, :);
     
     fprintf('%d,',i);
@@ -67,5 +67,5 @@ end
 dataL(~idxNaNL,:)=fmri_task_fittedL';
 dataR(~idxNaNR,:)=fmri_task_fittedR';
 
-save('fmri_task_fitted_rest_wt.mat','dataL', 'dataR');
+save('fmri_task_fitted_rest_wt.mat','dataL', 'dataR', '-v7.3');
 
