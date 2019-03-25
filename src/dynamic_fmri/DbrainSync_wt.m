@@ -24,10 +24,7 @@ R = U * V';
 Y2 = R * Y;
 
 wX=W.*X; wY2=W.*Y2;
-%     wX=wX(:); wY2=wY2(:);
 alpha = trace(wX'*wY2)/trace(wY2'*wY2);
-%alpha = sum(wX.*wY2)/sum(wY2.*wY2);
-%
 Y2=alpha*Y2;
 
 end

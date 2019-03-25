@@ -2,7 +2,7 @@
 %||Shree Ganeshaya Namaha||
 clc;clear all;close all;
 
-NCMP=21;
+NCMP=5;
 % generate templet D from resting state
 W=([1:(NCMP+1)/2,(NCMP-1)/2:-1:1].^2)';
 
