@@ -21,7 +21,7 @@ TR = 2
 fmri_run3 = loadmat('/deneb_disk/studyforrest/sub-02-run3\
 /fmri_tnlm_0p5_reduce3_v2.mat')  # h5py.File(fname1);
 
-dfs_ref = readdfs(os.path.join(p_dir_ref, 'reference', ref + '.aparc\
+dfs_ref = readdfs(os.path.join(p_dir_ref, 'reference.old', ref + '.aparc\
 .a2009s.32k_fs.reduce3.smooth.' + hemi + '.dfs'))
 
 segl = 219
@@ -49,17 +49,17 @@ fseg2 = normdata(fseg2)
 #fseg1 = fseg1[ind, :]
 #fseg2 = fseg2[ind, :]
 
-fseg1_2, R = rot_sub_data(ref=fseg2, sub=fseg1)
+fseg1_2, R, _ = rot_sub_data(ref=fseg2, sub=fseg1)
 
 faceseg1_2 = sp.dot(faceseg1, R.T)
 
-faceseg1_2 = gaussian_filter(faceseg1_2, 6)
+faceseg1_2 = gaussian_filter(faceseg1_2, 6)/1.6
 
 faceseg1 = gaussian_filter(faceseg1, 6)/1.6
 faceseg2 = gaussian_filter(faceseg2, 6)/1.6
-faceseg1 = faceseg1[:180]
-faceseg2 = faceseg2[:180]
-faceseg1_2 = faceseg1_2[:180]
+#faceseg1 = faceseg1[:180]
+#faceseg2 = faceseg2[:180]
+#faceseg1_2 = faceseg1_2[:180]
 
 print(sp.linalg.norm(fseg1-fseg2), sp.linalg.norm(fseg1_2-fseg2), sp.linalg.norm(fseg1_2-fseg1))
 print(sp.dot(faceseg1,faceseg2)/len(faceseg2), sp.dot(faceseg1_2,faceseg2)/len(faceseg2), sp.dot(faceseg1_2,faceseg1)/len(faceseg2))

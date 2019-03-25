@@ -11,12 +11,12 @@ from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as FDR
 from sklearn.decomposition import PCA
 import csv
 
-BFPPATH = '/big_disk/ajoshi/coding_ground/bfp'
+BFPPATH = '/home/ajoshi/coding_ground/bfp'
 BrainSuitePath = '/home/ajoshi/BrainSuite17a/svreg'
-NDim = 21
+NDim = 31
 #%%
 
-p_dir = '/deneb_disk/ADHD_Peking_bfp'
+p_dir = '/deneb_disk/grp_diff/ADHD_Peking_bfp'
 lst = os.listdir(p_dir)
 count1 = 0
 nsub = 0

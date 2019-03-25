@@ -59,10 +59,10 @@ for subid in sublist:
 
     faceseg1_2 = sp.dot(faceseg1, R.T)
 
-    faceseg1_2 = gaussian_filter(faceseg1_2, 6)
+    faceseg1_2 = gaussian_filter(faceseg1_2, 2.5)
 
-    faceseg1 = gaussian_filter(faceseg1, 6)/1.6
-    faceseg2 = gaussian_filter(faceseg2, 6)/1.6
+    faceseg1 = gaussian_filter(faceseg1, 2.5)/1.6
+    faceseg2 = gaussian_filter(faceseg2, 2.5)/1.6
     faceseg1 = faceseg1[:180]
     faceseg2 = faceseg2[:180]
     faceseg1_2 = faceseg1_2[:180]
