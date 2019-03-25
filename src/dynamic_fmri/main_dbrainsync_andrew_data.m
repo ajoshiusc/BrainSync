@@ -2,7 +2,7 @@
 %||Shree Ganeshaya Namaha||
 clc;clear all;close all;
 
-NCMP=5;
+NCMP=21;
 % generate templet D from resting state
 W=([1:(NCMP+1)/2,(NCMP-1)/2:-1:1].^2)';
 
@@ -54,18 +54,18 @@ for i = 1:size(fmri_taskL,1)-NCMP
 %    [xinL, ~, nrmL] = normalizeData(xinL);
     ddL = DbrainSync_wt(xinL, DL, W);
 %    ddL = ddL.*nrmL;
-    fmri_task_fittedL(Cind+i-1, :) = ddL(Cind, :);
+    fmri_task_fittedL(Cind+i-1, :) = xinL(Cind, :)-ddL(Cind, :);
     
     xinR = fmri_taskR(i:i+NCMP-1, :);
 %    [xinR, ~, nrmR] = normalizeData(xinR);
     ddR = DbrainSync_wt(xinR, DR, W);
 %    ddR = ddR.*nrmR;
-    fmri_task_fittedR(Cind+i-1, :) = ddR(Cind, :);
+    fmri_task_fittedR(Cind+i-1, :) = xinR(Cind, :)-ddR(Cind, :);
     
     fprintf('%d,',i);
 end
 dataL(~idxNaNL,:)=fmri_task_fittedL';
 dataR(~idxNaNR,:)=fmri_task_fittedR';
 
-save('fmri_task_fitted_rest_wt.mat','dataL', 'dataR', '-v7.3');
+save('fmri_task_fitted_rest_wt0.mat','dataL', 'dataR', '-v7.3');
 

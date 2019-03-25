@@ -14,7 +14,7 @@ subid = '100307'
 design = '/ImagePTE1/ajoshi/For_Anand_MICCAI/BD.mat'
 
 fmri_file = os.path.join(data_dir, subid, 'tfMRI_LANGUAGE_LR.mat')
-fmri_file = '/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/fmri_task_fitted_rest_wt.mat'
+fmri_file = '/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/fmri_task_fitted_rest_wt0.mat'
 
 idNaN_file = os.path.join(data_dir, 'IdxNaN.mat')
 f = h5py.File(idNaN_file, 'r')
@@ -65,21 +65,21 @@ prediction = svc.predict(fmri_masked[-30:])
 from sklearn.model_selection import KFold
 
 cv = KFold(n_splits=5)
-cv_error = []
+cv_accuracy = []
 # The "cv" object's split method can now accept data and create a
 # generator which can yield the splits.
 for train, test in cv.split(X=fmri_masked):
     conditions_masked = conditions[train]
     svc.fit(fmri_masked[train], conditions_masked)
     prediction = svc.predict(fmri_masked[test])
-    cv_error.append(
+    cv_accuracy.append(
         (prediction == conditions[test]).sum() / float(len(conditions[test])))
 
-cv_error = np.array(cv_error)
-print('CV error')
-print(cv_error)
+cv_accuracy = np.array(cv_accuracy)
+print('CV accuracy')
+print(cv_accuracy)
 print('******%s******' % subid)
-print('CV error mean(std): %g (%g)' % (cv_error.mean(), cv_error.std()))
+print('CV accuracy mean(std): %g (%g)' % (cv_accuracy.mean(), cv_accuracy.std()))
 print('*****done*****')
 
 #LANGUAGE.LR.X[:,:2]
