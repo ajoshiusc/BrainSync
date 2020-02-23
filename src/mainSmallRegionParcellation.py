@@ -31,7 +31,7 @@ dfs_left_sm = readdfs(
 count1 = 0
 rho_rho = []
 rho_all = np.zeros([0, 0])
-for sub in tqdm(lst):
+for sub in tqdm(lst[:5]):
     try:
         data = scipy.io.loadmat(
             os.path.join(
