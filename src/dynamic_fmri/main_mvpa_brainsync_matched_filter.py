@@ -14,7 +14,7 @@ subid = '100307'
 design = '/ImagePTE1/ajoshi/For_Anand_MICCAI/BD.mat'
 
 fmri_file = os.path.join(data_dir, subid, 'tfMRI_LANGUAGE_LR.mat')
-fmri_file = '/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/fmri_task_fitted_rest_wt0.mat'
+fmri_file = '/home/ajoshi/coding_ground/brainsync/src/dynamic_fmri/fmri_task_fitted_rest_wt.mat'
 
 idNaN_file = os.path.join(data_dir, 'IdxNaN.mat')
 f = h5py.File(idNaN_file, 'r')
@@ -37,14 +37,17 @@ lang = np.array(f['LANGUAGE']['LR']['X'])
 #print(lang)
 f.close()
 
-conditions = lang[0]
+lang = 1.0 * (lang > 0)
+conditions = np.argmax(lang[2:, :], axis=0)
 #print(conditions)
 
-condition_mask = np.isin(conditions, [0, 1])
+condition_mask = np.isin(conditions, [1, 2, 3, 4, 5, 6])
 # We apply this mask in the sampe direction to restrict the
 # classification to the face vs cat discrimination
 
 fmri_masked = fmri_data[condition_mask, :]
+
+conditions = conditions[condition_mask]
 
 svc = SVC(kernel='linear')
 #print(svc)
@@ -79,7 +82,8 @@ cv_accuracy = np.array(cv_accuracy)
 print('CV accuracy')
 print(cv_accuracy)
 print('******%s******' % subid)
-print('CV accuracy mean(std): %g (%g)' % (cv_accuracy.mean(), cv_accuracy.std()))
+print(
+    'CV accuracy mean(std): %g (%g)' % (cv_accuracy.mean(), cv_accuracy.std()))
 print('*****done*****')
 
 #LANGUAGE.LR.X[:,:2]
